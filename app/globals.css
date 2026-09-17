@@ -1,0 +1,529 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   AUROS Design System — Tailwind v4 @theme
+   DATASPHERE 2026
+   ────────────────────────────────────────────── */
+
+@theme inline {
+  /* ── Colors ── */
+  --color-liquid-abyss: #012624;
+  --color-liquid-deep: #011d1c;
+  --color-liquid-kelp: #003734;
+  --color-liquid-mist: #edfffe;
+  --color-platinum: #ffffff;
+  --color-silver-mist: #bbc7c6;
+  --color-ash: #f2f2f2;
+  --color-slate-deep: #707777;
+  --color-lavender-phosphor: #fde9ff;
+
+  /* ── Font Families ── */
+  --font-matter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-arial: 'Arial', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* ── Typography Scale ── */
+  --text-caption: 10px;
+  --leading-caption: 1.4;
+  --tracking-caption: 1.5px;
+  --text-body: 16px;
+  --leading-body: 1.4;
+  --text-subheading: 24px;
+  --leading-subheading: 1.3;
+  --tracking-subheading: -0.48px;
+  --text-heading: 36px;
+  --leading-heading: 1;
+  --text-heading-lg: 61px;
+  --leading-heading-lg: 1;
+  --tracking-heading-lg: -2.44px;
+  --text-display: 96px;
+  --leading-display: 1;
+  --tracking-display: -3.84px;
+
+  /* ── Spacing ── */
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-68: 68px;
+  --spacing-80: 80px;
+  --spacing-120: 120px;
+  --spacing-140: 140px;
+  --spacing-160: 160px;
+  --spacing-164: 164px;
+
+  /* ── Border Radius ── */
+  --radius-cards: 16px;
+  --radius-small: 6px;
+  --radius-buttons: 6px;
+}
+
+/* ── CSS Custom Properties (non-Tailwind) ── */
+:root {
+  --gradient-bioluminescent: linear-gradient(90deg, rgb(0, 130, 124) 0%, rgb(203, 255, 252) 100%);
+  --gradient-aurora: linear-gradient(90deg, rgb(203, 255, 252) 0%, rgb(237, 255, 254) 26.25%, rgb(255, 253, 250) 47.57%, rgb(250, 209, 255) 88.96%);
+  --page-max-width: 1440px;
+  --section-gap: 68px;
+  --element-gap: 20px;
+}
+
+/* ──────────────────────────────────────────────
+   Base Styles
+   ────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-liquid-abyss);
+  color: var(--color-silver-mist);
+  font-family: var(--font-matter);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  color: var(--color-platinum);
+  font-family: var(--font-matter);
+  font-weight: 500;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw + 1rem, 6rem);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+h2 {
+  font-size: clamp(1.75rem, 3vw + 0.5rem, 3.8rem);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading-lg);
+}
+
+h3 {
+  font-size: var(--text-heading);
+  line-height: var(--leading-heading);
+}
+
+/* ──────────────────────────────────────────────
+   Component Utilities
+   ────────────────────────────────────────────── */
+
+/* Gradient Pill Button — CTA utama */
+.gradient-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(90deg, rgb(203, 255, 252) 0%, rgb(237, 255, 254) 26%, rgb(255, 253, 250) 47%, rgb(250, 209, 255) 75%, rgb(203, 255, 252) 100%);
+  background-size: 200% auto;
+  border: none;
+  border-radius: var(--radius-buttons);
+  padding: 16px 32px;
+  font-family: var(--font-arial);
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 130, 124, 0.25), 0 0 40px rgba(250, 209, 255, 0.15);
+  transition: opacity 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  animation: aurora-sweep 8s linear infinite;
+  position: relative;
+}
+
+.gradient-pill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(203, 255, 252, 0.5), 0 0 60px rgba(250, 209, 255, 0.35);
+}
+
+.gradient-pill-btn:active {
+  transform: translateY(0);
+}
+
+/* Ghost Navigation Link */
+.ghost-nav-link {
+  font-family: var(--font-matter);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-silver-mist);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  text-decoration: none;
+  padding: 0;
+}
+
+.ghost-nav-link:hover,
+.ghost-nav-link.active {
+  color: var(--color-platinum);
+}
+
+/* Section Label — Eyebrow/Kicker */
+.section-label {
+  font-family: var(--font-matter);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-silver-mist);
+}
+
+/* Surface Card */
+.surface-card {
+  background-color: var(--color-liquid-kelp);
+  border-radius: var(--radius-cards);
+  padding: 36px;
+  border: 1px solid rgba(0, 130, 124, 0.18);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 130, 124, 0.55);
+  box-shadow: 0 16px 36px -12px rgba(0, 130, 124, 0.25), 0 0 24px rgba(250, 209, 255, 0.08);
+}
+
+/* Recessed Card */
+.recessed-card {
+  background-color: var(--color-liquid-deep);
+  border-radius: var(--radius-cards);
+  padding: 80px 36px;
+  border: 1px solid rgba(0, 130, 124, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .recessed-card {
+    padding: 120px 48px;
+  }
+}
+
+/* Arrow Icon Button */
+.arrow-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-small);
+  background-color: rgba(3, 81, 75, 0.5);
+  color: var(--color-platinum);
+  border: 1px solid rgba(0, 130, 124, 0.25);
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.surface-card:hover .arrow-icon-btn,
+.arrow-icon-btn:hover {
+  background-color: rgba(0, 130, 124, 0.85);
+  border-color: rgba(203, 255, 252, 0.5);
+  transform: translate(3px, -3px);
+  box-shadow: 0 0 12px rgba(0, 130, 124, 0.5);
+}
+
+/* Statistic Counter */
+.stat-number {
+  font-family: var(--font-matter);
+  font-weight: 500;
+  font-size: clamp(2.5rem, 5vw, 5.375rem);
+  line-height: 1;
+  letter-spacing: -0.046em;
+  color: var(--color-lavender-phosphor);
+  text-shadow: 0 0 24px rgba(253, 233, 255, 0.35);
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.stat-number:hover {
+  text-shadow: 0 0 36px rgba(253, 233, 255, 0.65), 0 0 60px rgba(0, 130, 124, 0.4);
+  transform: scale(1.02);
+}
+
+.stat-label {
+  font-family: var(--font-matter);
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  color: var(--color-liquid-mist);
+}
+
+/* ──────────────────────────────────────────────
+   Layout Utilities
+   ────────────────────────────────────────────── */
+
+.page-container {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+}
+
+/* Placeholder styling for [ISI] fields */
+.placeholder-data {
+  display: inline-block;
+  background-color: rgba(253, 233, 255, 0.12);
+  border: 1px dashed rgba(253, 233, 255, 0.3);
+  border-radius: var(--radius-small);
+  padding: 2px 10px;
+  color: var(--color-lavender-phosphor);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* ──────────────────────────────────────────────
+   Animations — Scroll-triggered (Intersection Observer)
+   ────────────────────────────────────────────── */
+
+/* Base state: hidden before entering viewport */
+.aos-element {
+  will-change: transform, opacity;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Variants — initial (hidden) states */
+.aos-fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.aos-fade-in {
+  opacity: 0;
+}
+
+.aos-scale-in {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.aos-slide-left {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.aos-slide-right {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+/* Visible state — applied via IntersectionObserver */
+.aos-visible.aos-fade-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.aos-visible.aos-fade-in {
+  opacity: 1;
+}
+
+.aos-visible.aos-scale-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.aos-visible.aos-slide-left {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.aos-visible.aos-slide-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Hero entrance animations (play on page load) ── */
+
+@keyframes hero-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate {
+  animation: hero-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-animate-d1 {
+  animation: hero-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.hero-animate-d2 {
+  animation: hero-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.hero-animate-d3 {
+  animation: hero-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+.hero-animate-d4 {
+  animation: hero-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+/* ── Ambient / decorative animations ── */
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 6s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 30s linear infinite;
+}
+
+@keyframes aurora-sweep {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes timeline-beam {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes bioluminescent-breathe {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes data-sparkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-timeline-beam {
+  animation: timeline-beam 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-bioluminescent-breathe {
+  animation: bioluminescent-breathe 8s ease-in-out infinite;
+}
+
