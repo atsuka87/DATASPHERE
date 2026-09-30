@@ -113,10 +113,8 @@ export default function FAQPage() {
                     setActiveCategory(tab.id);
                     setOpenIndex(null);
                   }}
-                  className={`px-[18px] py-[9px] rounded-[var(--radius-buttons)] text-[13px] tracking-[0.05em] font-medium transition-all duration-200 cursor-pointer ${
-                    activeCategory === tab.id
-                      ? "bg-teal-500/20 text-teal-300 border border-teal-400/50 shadow-md shadow-teal-500/10"
-                      : "bg-liquid-deep/70 text-silver-mist border border-liquid-kelp hover:text-platinum hover:border-teal-700/60"
+                  className={`filter-pill ${
+                    activeCategory === tab.id ? "active" : ""
                   }`}
                 >
                   {tab.label}
@@ -134,16 +132,16 @@ export default function FAQPage() {
               return (
                 <div
                   key={idx}
-                  className="surface-card p-0 border border-liquid-kelp/80 hover:border-teal-500/40 transition-all duration-200 overflow-hidden"
+                  className="surface-card p-0 transition-all duration-200 overflow-hidden"
                 >
                   <button
                     onClick={() => toggleAccordion(idx)}
-                    className="w-full text-left p-[22px] md:p-[26px] flex items-center justify-between gap-[16px] cursor-pointer bg-transparent border-none text-platinum font-medium text-[17px] leading-[1.35] transition-colors hover:text-teal-300"
+                    className="w-full text-left p-[22px] md:p-[26px] flex items-center justify-between gap-[16px] cursor-pointer bg-transparent border-none text-platinum font-medium text-[17px] leading-[1.35] transition-colors hover:text-lavender-phosphor"
                   >
                     <span>{faq.question}</span>
                     <span
-                      className={`w-[28px] h-[28px] rounded-full bg-liquid-deep flex items-center justify-center text-teal-400 text-[18px] flex-shrink-0 transition-transform duration-300 border border-liquid-kelp ${
-                        isOpen ? "rotate-45 text-lavender-phosphor" : ""
+                      className={`w-[28px] h-[28px] rounded-full bg-liquid-tide flex items-center justify-center text-accent-secondary text-[18px] flex-shrink-0 transition-all duration-300 border border-accent-primary/40 ${
+                        isOpen ? "rotate-45 text-lavender-phosphor border-accent-secondary" : ""
                       }`}
                     >
                       +
@@ -151,7 +149,7 @@ export default function FAQPage() {
                   </button>
 
                   {isOpen && (
-                    <div className="px-[22px] md:px-[26px] pb-[24px] pt-[2px] text-silver-mist text-[15px] leading-[1.55] border-t border-liquid-deep/60">
+                    <div className="px-[22px] md:px-[26px] py-[20px] text-silver-mist text-[15px] leading-[1.55] border-t border-accent-primary/25 bg-liquid-tide/50">
                       <p>{faq.answer}</p>
                     </div>
                   )}
@@ -160,9 +158,9 @@ export default function FAQPage() {
             })}
 
             {/* Helpdesk Contact Card */}
-            <div className="recessed-card flex flex-col sm:flex-row items-center justify-between gap-[20px] p-[28px] md:p-[36px] mt-[32px] border border-liquid-kelp">
+            <div className="recessed-card flex flex-col sm:flex-row items-center justify-between gap-[20px] p-[28px] md:p-[36px] mt-[32px]">
               <div className="flex flex-col gap-[4px] text-center sm:text-left">
-                <span className="section-label text-teal-300 text-[11px]">BANTUAN LEBIH LANJUT</span>
+                <span className="section-label text-lavender-phosphor text-[11px]">BANTUAN LEBIH LANJUT</span>
                 <h3 className="text-platinum text-[20px]">Masih Memiliki Pertanyaan Lain?</h3>
                 <p className="text-silver-mist text-[14px]">Tim panitia siap menjawab melalui WhatsApp resmi.</p>
               </div>

@@ -55,7 +55,7 @@ export default function Footer() {
               Darmajaya High School Data Science Challenge &amp; Capstone Expo
               2026. Diselenggarakan oleh mahasiswa S1 Sains Data IIB Darmajaya.
             </p>
-            <p className="text-slate-deep text-[13px] mt-[8px]">
+            <p className="text-silver-mist text-[13px] mt-[8px]">
               Jl. Jend. Ahmad Yani No.12, Bandar Lampung
             </p>
           </div>
@@ -94,11 +94,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-[48px] pt-[24px] border-t border-liquid-kelp/50 flex flex-col sm:flex-row justify-between items-center gap-[12px]">
-          <p className="text-slate-deep text-[13px]">
+        <div className="mt-[48px] pt-[24px] border-t border-liquid-tide flex flex-col sm:flex-row justify-between items-center gap-[12px]">
+          <p className="text-silver-mist text-[13px]">
             © 2026 DATASPHERE — IIB Darmajaya. All rights reserved.
           </p>
-          <p className="text-slate-deep text-[13px]">
+          <p className="text-silver-mist text-[13px]">
             Capstone Project — Program Studi S1 Sains Data
           </p>
         </div>

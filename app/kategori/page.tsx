@@ -141,10 +141,8 @@ export default function KategoriPage() {
             <div className="flex flex-wrap items-center justify-center gap-[10px] mt-[16px]">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`px-[20px] py-[10px] rounded-[var(--radius-buttons)] text-[13px] tracking-[0.06em] font-medium transition-all duration-200 cursor-pointer ${
-                  activeTab === "all"
-                    ? "bg-teal-500/20 text-teal-300 border border-teal-400/50 shadow-md shadow-teal-500/10"
-                    : "bg-liquid-deep/70 text-silver-mist border border-liquid-kelp hover:text-platinum hover:border-teal-700/60"
+                className={`filter-pill ${
+                  activeTab === "all" ? "active" : ""
                 }`}
               >
                 Semua Kategori (3)
@@ -153,10 +151,8 @@ export default function KategoriPage() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveTab(cat.id)}
-                  className={`px-[20px] py-[10px] rounded-[var(--radius-buttons)] text-[13px] tracking-[0.06em] font-medium transition-all duration-200 cursor-pointer ${
-                    activeTab === cat.id
-                      ? "bg-teal-500/20 text-teal-300 border border-teal-400/50 shadow-md shadow-teal-500/10"
-                      : "bg-liquid-deep/70 text-silver-mist border border-liquid-kelp hover:text-platinum hover:border-teal-700/60"
+                  className={`filter-pill ${
+                    activeTab === cat.id ? "active" : ""
                   }`}
                 >
                   {cat.name}
@@ -173,16 +169,16 @@ export default function KategoriPage() {
               <div
                 key={cat.id}
                 id={cat.id}
-                className="surface-card flex flex-col gap-[36px] p-[32px] md:p-[48px] border border-liquid-kelp/80 hover:border-teal-500/40 transition-all duration-300 relative overflow-hidden"
+                className="surface-card flex flex-col gap-[36px] p-[32px] md:p-[48px] relative overflow-hidden"
               >
                 {/* Category Header */}
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-[24px] pb-[28px] border-b border-liquid-deep">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-[24px] pb-[28px] border-b border-liquid-tide">
                   <div className="flex flex-col gap-[10px]">
                     <div className="flex items-center gap-[12px]">
-                      <span className="text-[12px] tracking-[0.16em] uppercase font-semibold text-teal-400 bg-liquid-deep px-[10px] py-[3px] rounded-[var(--radius-small)] border border-teal-500/20">
+                      <span className="text-[12px] tracking-[0.16em] uppercase font-semibold text-lavender-phosphor bg-liquid-tide px-[10px] py-[3px] rounded-[var(--radius-small)] border border-accent-primary/40">
                         Kategori {cat.number}
                       </span>
-                      <span className="text-[12px] text-slate-deep tracking-[0.08em] uppercase">
+                      <span className="text-[12px] text-silver-mist tracking-[0.08em] uppercase font-medium">
                         {cat.format}
                       </span>
                     </div>
@@ -205,7 +201,7 @@ export default function KategoriPage() {
                 </div>
 
                 {/* Quick Info Badges */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-[16px] bg-liquid-deep/70 p-[20px] rounded-[var(--radius-cards)] border border-liquid-kelp/50">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-[16px] bg-liquid-tide p-[20px] rounded-[var(--radius-cards)] border border-accent-primary/30">
                   <div className="flex flex-col gap-[4px]">
                     <span className="section-label text-[10px]">Ukuran Tim</span>
                     <span className="text-platinum font-medium text-[15px]">{cat.teamSize}</span>
@@ -216,14 +212,14 @@ export default function KategoriPage() {
                   </div>
                   <div className="flex flex-col gap-[4px]">
                     <span className="section-label text-[10px]">Biaya Pendaftaran</span>
-                    <span className="text-teal-400 font-medium text-[15px]">Gratis (Free of Charge)</span>
+                    <span className="text-liquid-mist font-medium text-[15px]">Gratis (Free of Charge)</span>
                   </div>
                 </div>
 
                 {/* Overview Description */}
                 <div className="flex flex-col gap-[12px]">
                   <span className="section-label">DESKRIPSI LOMBA</span>
-                  <p className="text-silver-mist text-[16px] leading-[1.5]">
+                  <p className="text-liquid-mist text-[16px] leading-[1.5]">
                     {cat.description}
                   </p>
                 </div>
@@ -235,12 +231,12 @@ export default function KategoriPage() {
                     {cat.mechanism.map((step, idx) => (
                       <div
                         key={idx}
-                        className="bg-liquid-deep/50 p-[20px] rounded-[var(--radius-small)] border border-liquid-kelp/40 flex flex-col gap-[8px]"
+                        className="bg-liquid-tide p-[20px] rounded-[var(--radius-small)] border border-accent-primary/30 flex flex-col gap-[8px]"
                       >
-                        <span className="text-[11px] tracking-[0.12em] font-semibold text-teal-400">
+                        <span className="text-[11px] tracking-[0.12em] font-semibold text-lavender-phosphor">
                           TAHAP {idx + 1}
                         </span>
-                        <p className="text-silver-mist text-[14px] leading-[1.45]">
+                        <p className="text-liquid-mist text-[14px] leading-[1.45]">
                           {step}
                         </p>
                       </div>
@@ -255,10 +251,10 @@ export default function KategoriPage() {
                     {cat.tools.map((tool) => (
                       <div
                         key={tool.name}
-                        className="bg-liquid-abyss/80 border border-liquid-kelp/70 px-[14px] py-[8px] rounded-[var(--radius-small)] flex flex-col"
+                        className="bg-liquid-tide border border-accent-primary/30 px-[14px] py-[8px] rounded-[var(--radius-small)] flex flex-col"
                       >
                         <span className="text-platinum font-medium text-[13px]">{tool.name}</span>
-                        <span className="text-slate-deep text-[11px]">{tool.desc}</span>
+                        <span className="text-silver-mist text-[11px]">{tool.desc}</span>
                       </div>
                     ))}
                   </div>
@@ -271,15 +267,15 @@ export default function KategoriPage() {
                     {cat.rubric.map((r) => (
                       <div
                         key={r.aspect}
-                        className="bg-liquid-deep/60 p-[18px] rounded-[var(--radius-small)] border border-liquid-kelp/40 flex flex-col gap-[6px]"
+                        className="bg-liquid-tide p-[18px] rounded-[var(--radius-small)] border border-accent-primary/30 flex flex-col gap-[6px]"
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-platinum font-medium text-[14px]">{r.aspect}</span>
-                          <span className="text-[13px] font-bold text-teal-300 bg-teal-950/60 px-[8px] py-[2px] rounded border border-teal-700/40">
+                          <span className="text-[13px] font-bold text-silver-mist bg-liquid-kelp px-[8px] py-[2px] rounded border border-accent-primary/50">
                             {r.weight}
                           </span>
                         </div>
-                        <p className="text-silver-mist text-[12px] leading-[1.4]">
+                        <p className="text-liquid-mist text-[12px] leading-[1.4]">
                           {r.desc}
                         </p>
                       </div>
@@ -288,9 +284,9 @@ export default function KategoriPage() {
                 </div>
 
                 {/* Prizes */}
-                <div className="flex flex-col gap-[16px] bg-gradient-to-r from-liquid-deep/90 to-liquid-kelp/40 p-[24px] rounded-[var(--radius-cards)] border border-teal-500/20">
+                <div className="flex flex-col gap-[16px] bg-liquid-tide p-[24px] rounded-[var(--radius-cards)] border border-accent-primary/30">
                   <div className="flex items-center justify-between">
-                    <span className="section-label text-teal-300">PENGHARGAAN &amp; BENEFIT</span>
+                    <span className="section-label text-lavender-phosphor">PENGHARGAAN &amp; BENEFIT</span>
                     <span className="text-[12px] text-lavender-phosphor font-medium tracking-[0.06em]">
                       Total Hadiah Jutaan Rupiah
                     </span>
@@ -299,7 +295,7 @@ export default function KategoriPage() {
                     {cat.prizes.map((p) => (
                       <div key={p.rank} className="flex flex-col gap-[4px]">
                         <span className="text-platinum font-semibold text-[14px]">{p.rank}</span>
-                        <span className="text-silver-mist text-[12px] leading-[1.4]">{p.reward}</span>
+                        <span className="text-liquid-mist text-[12px] leading-[1.4]">{p.reward}</span>
                       </div>
                     ))}
                   </div>

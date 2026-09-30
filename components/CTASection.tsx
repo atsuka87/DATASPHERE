@@ -5,14 +5,14 @@ export default function CTASection() {
   return (
     <section className="py-[var(--section-gap)] relative">
       <div className="page-container">
-        <AnimateOnScroll animation="scale-in">
+        <AnimateOnScroll animation="fade-up">
           <div className="recessed-card flex flex-col items-center text-center gap-[24px] relative overflow-hidden">
             {/* Ambient deep-water bioluminescent glow inside recessed card */}
             <div
               className="absolute inset-0 pointer-events-none animate-bioluminescent-breathe"
               style={{
                 background:
-                  "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(0, 130, 124, 0.18) 0%, rgba(250, 209, 255, 0.04) 45%, transparent 70%)",
+                  "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(0, 150, 199, 0.22) 0%, rgba(144, 224, 239, 0.06) 45%, transparent 70%)",
               }}
               aria-hidden="true"
             />
@@ -40,7 +40,7 @@ export default function CTASection() {
               </Link>
               <Link
                 href="/kontak"
-                className="ghost-nav-link text-[13px] tracking-[0.12em] py-[16px] px-[24px] rounded-[var(--radius-small)] border border-transparent hover:border-liquid-kelp hover:bg-liquid-kelp/40 transition-all duration-300"
+                className="ghost-nav-link text-[13px] tracking-[0.12em] py-[16px] px-[24px] rounded-[var(--radius-small)] border border-transparent hover:border-accent-primary hover:bg-liquid-tide/60 transition-all duration-300"
               >
                 Hubungi Panitia →
               </Link>

@@ -16,28 +16,37 @@ Website kompetisi data science untuk siswa SMA/SMK: **DATASPHERE 2026 — Darmaj
 - Panitia cek data lewat Supabase Table Editor — tidak perlu bikin dashboard admin di v1.
 - Font: Matter (custom display) — fallback Inter/DM Sans/Satoshi kalau Matter tidak tersedia; Arial untuk elemen UI kecil (14px: nav, tombol, label form)
 
-## Design System — "Auros" (Abyssal Terminal)
+## Design System — "Ocean Blue Serenity" (Abyssal Terminal)
 
-Tema: **dark**, "abyssal terminal dengan bioluminescent data orbs" — canvas teal gelap nyaris hitam, gradasi teal→pink, sparse & cinematic.
+Tema: **dark**, "abyssal terminal dengan bioluminescent data orbs" — canvas biru laut gelap nyaris midnight, gradasi ocean blue→cyan, sparse & cinematic.
 
 ### Warna (WAJIB pakai token ini, jangan improvisasi warna baru)
 
 ```css
---color-liquid-abyss: #012624;   /* background utama: page, header, hero */
---color-liquid-deep: #011d1c;    /* surface terdalam: footer, recessed card/CTA */
---color-liquid-kelp: #003734;    /* card terangkat: feature card, tombol primer */
---color-liquid-mist: #edfffe;    /* teks body ditekankan, label section */
---color-platinum: #ffffff;       /* heading, nav, ikon, teks kontras tinggi */
---color-silver-mist: #bbc7c6;    /* teks body sekunder, link resting state */
---color-ash: #f2f2f2;            /* teks tersier: quote, testimoni */
---color-slate-deep: #707777;     /* background low-emphasis */
---color-lavender-phosphor: #fde9ff; /* angka statistik besar, highlight */
+--color-liquid-deep: #01012f;          /* surface terdalam: footer, recessed card */
+--color-liquid-abyss: #03045e;         /* background utama halaman */
+--color-liquid-tide: #052166;          /* konten bersarang di dalam card besar (info box, meta info, sub-section) */
+--color-liquid-kelp: #023e8a;          /* card besar (surface card, detail kategori, FAQ, kontak, pendaftaran) */
+--color-accent-primary: #0077b6;       /* tombol primer, badge kecil, border aktif, filter tab aktif */
+--color-accent-secondary: #00b4d8;     /* underline nav aktif, border hover, glow highlights */
+--color-liquid-mist: #caf0f8;          /* teks body ditekankan */
+--color-silver-mist: #ade8f4;          /* teks body sekunder, nav link nonaktif */
+--color-lavender-phosphor: #90e0ef;    /* angka statistik besar, highlight */
+--color-platinum: #ffffff;             /* heading, teks kontras tinggi, filter aktif */
 
---gradient-bioluminescent: linear-gradient(90deg, rgb(0,130,124) 0%, rgb(203,255,252) 100%);
---gradient-aurora: linear-gradient(90deg, rgb(203,255,252) 0%, rgb(237,255,254) 26.25%, rgb(255,253,250) 47.57%, rgb(250,209,255) 88.96%);
+--gradient-aurora: linear-gradient(90deg, #48cae4 0%, #90e0ef 40%, #caf0f8 100%);
 ```
 
-**Aturan warna:** hanya pakai stack teal (`liquid-deep` → `liquid-abyss` → `liquid-kelp`) untuk diferensiasi background. Jangan pakai gray/hitam/biru netral generik. Gradient hanya untuk: tombol CTA utama & aksen dekoratif kecil.
+**Aturan hierarki kegelapan (Ocean Blue Serenity):**
+1. **Background utama halaman** = `liquid-abyss` (`#03045e`).
+2. **Footer & Recessed Card (CTA)** = `liquid-deep` (`#01012f`, paling gelap).
+3. **Card besar (Surface card, FAQ, detail kategori, kontak, pendaftaran)** = `liquid-kelp` (`#023e8a`), dengan `border: 1px solid rgba(0, 119, 182, 0.3)` dan `box-shadow: 0 20px 60px rgba(3, 4, 94, 0.5)`.
+4. **Konten bersarang di dalam card besar** = `liquid-tide` (`#052166`) — harus konsisten lebih gelap dari card induknya.
+5. **accent-primary (`#0077b6`) & accent-secondary (`#00b4d8`)** hanya untuk: badge kecil, tombol, border aktif, underline nav aktif, ikon — TIDAK PERNAH untuk background block besar.
+6. **Filter pill / tab**: nonaktif = transparan + border `rgba(202, 240, 248, 0.2)` + teks `silver-mist`; aktif = `accent-primary` solid + teks putih.
+7. **Nav link**: nonaktif = `silver-mist`; aktif/hover = putih + underline `accent-secondary`.
+8. **Semua teks body**: pakai `silver-mist` atau lebih terang.
+9. **Statistic counter / angka besar**: `lavender-phosphor`.
 
 ### Tipografi
 
@@ -68,7 +77,7 @@ Tema: **dark**, "abyssal terminal dengan bioluminescent data orbs" — canvas te
 - **Surface Card**: background `liquid-kelp`, radius 16px, padding 36px, heading 36px putih, body 16px silver.
 - **Recessed Card**: background `liquid-deep`, radius 16px, padding vertikal 120px — untuk CTA/section penutup.
 - **Statistic Counter**: angka besar warna `lavender-phosphor`, label kecil uppercase di bawahnya.
-- **Arrow Icon Button**: 32×32px, radius 6px, fill teal semi-transparan `rgba(3,81,75,0.5)`, ikon panah putih ↗.
+- **Arrow Icon Button**: 32×32px, radius 6px, fill ocean blue semi-transparan `rgba(2,62,138,0.5)`, ikon panah putih ↗.
 
 ### Do's & Don'ts
 

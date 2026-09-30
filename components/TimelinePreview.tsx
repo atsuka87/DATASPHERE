@@ -52,7 +52,7 @@ export default function TimelinePreview() {
               className="w-full h-full animate-timeline-beam"
               style={{
                 background:
-                  "linear-gradient(90deg, transparent 0%, rgba(0, 130, 124, 0.4) 20%, rgba(203, 255, 252, 0.9) 50%, rgba(250, 209, 255, 0.8) 80%, transparent 100%)",
+                  "linear-gradient(90deg, transparent 0%, rgba(0, 150, 199, 0.4) 20%, rgba(72, 202, 228, 0.9) 50%, rgba(144, 224, 239, 0.8) 80%, transparent 100%)",
               }}
             />
           </div>
@@ -71,7 +71,7 @@ export default function TimelinePreview() {
                       {/* Active pulsing ring for phase 01 */}
                       {step.status === "active" && (
                         <div
-                          className="absolute -inset-[6px] rounded-full border border-teal-400/60 animate-pulse-ring pointer-events-none"
+                          className="absolute -inset-[6px] rounded-full border border-accent-secondary/60 animate-pulse-ring pointer-events-none"
                           aria-hidden="true"
                         />
                       )}
@@ -81,18 +81,18 @@ export default function TimelinePreview() {
                         style={{
                           background:
                             step.status === "active"
-                              ? "var(--gradient-bioluminescent)"
+                              ? "var(--gradient-aurora)"
                               : "var(--color-liquid-kelp)",
                           boxShadow:
                             step.status === "active"
-                              ? "0 0 20px rgba(0, 130, 124, 0.4)"
+                              ? "0 0 20px rgba(0, 180, 216, 0.5)"
                               : "none",
                         }}
                       >
                         <span
                           className={`font-medium text-[20px] tracking-[0.08em] ${
                             step.status === "active"
-                              ? "text-liquid-abyss font-semibold"
+                              ? "text-liquid-deep font-semibold"
                               : "text-platinum"
                           }`}
                         >
@@ -115,7 +115,7 @@ export default function TimelinePreview() {
                     <p className="text-silver-mist text-[15px] leading-[1.45]">
                       {step.description}
                     </p>
-                    <span className="text-[12px] tracking-[0.08em] font-medium text-teal-400/90 bg-liquid-kelp/50 border border-teal-500/20 rounded-[var(--radius-small)] px-[10px] py-[3px] mt-[4px] self-start">
+                    <span className="text-[12px] tracking-[0.08em] font-medium text-lavender-phosphor bg-liquid-tide border border-accent-primary/40 rounded-[var(--radius-small)] px-[10px] py-[3px] mt-[4px] self-start">
                       {step.date}
                     </span>
                   </div>

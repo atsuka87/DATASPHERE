@@ -6,16 +6,17 @@
    ────────────────────────────────────────────── */
 
 @theme inline {
-  /* ── Colors ── */
-  --color-liquid-abyss: #012624;
-  --color-liquid-deep: #011d1c;
-  --color-liquid-kelp: #003734;
-  --color-liquid-mist: #edfffe;
-  --color-platinum: #ffffff;
-  --color-silver-mist: #bbc7c6;
-  --color-ash: #f2f2f2;
-  --color-slate-deep: #707777;
-  --color-lavender-phosphor: #fde9ff;
+  /* ── Colors — Ocean Blue Serenity Final ── */
+  --color-liquid-deep: #01012f;          /* surface terdalam: footer, recessed card */
+  --color-liquid-abyss: #03045e;         /* background utama halaman */
+  --color-liquid-tide: #052166;          /* konten bersarang di dalam card besar */
+  --color-liquid-kelp: #023e8a;          /* card besar (surface-card) */
+  --color-accent-primary: #0077b6;       /* tombol primer, badge kecil, border aktif, filter aktif */
+  --color-accent-secondary: #00b4d8;     /* underline nav aktif, border hover, glow highlights */
+  --color-liquid-mist: #caf0f8;          /* teks body ditekankan */
+  --color-silver-mist: #ade8f4;          /* teks body sekunder, nav link resting state */
+  --color-lavender-phosphor: #90e0ef;    /* angka statistik besar, highlight */
+  --color-platinum: #ffffff;             /* heading, teks kontras tinggi */
 
   /* ── Font Families ── */
   --font-matter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -64,16 +65,30 @@
 }
 
 /* ── CSS Custom Properties (non-Tailwind) ── */
+@property --bg-glow-x {
+  syntax: '<percentage> | <length>';
+  inherits: true;
+  initial-value: 35%;
+}
+
+@property --bg-glow-y {
+  syntax: '<percentage> | <length>';
+  inherits: true;
+  initial-value: 40%;
+}
+
 :root {
-  --gradient-bioluminescent: linear-gradient(90deg, rgb(0, 130, 124) 0%, rgb(203, 255, 252) 100%);
-  --gradient-aurora: linear-gradient(90deg, rgb(203, 255, 252) 0%, rgb(237, 255, 254) 26.25%, rgb(255, 253, 250) 47.57%, rgb(250, 209, 255) 88.96%);
+  --bg-glow-x: 35%;
+  --bg-glow-y: 40%;
+  --gradient-bioluminescent: linear-gradient(90deg, #0096C7 0%, #48CAE4 100%);
+  --gradient-aurora: linear-gradient(90deg, #48CAE4 0%, #90E0EF 40%, #CAF0F8 100%);
   --page-max-width: 1440px;
   --section-gap: 68px;
   --element-gap: 20px;
 }
 
 /* ──────────────────────────────────────────────
-   Base Styles
+   Base Styles & Ocean Blue Serenity Radial Background
    ────────────────────────────────────────────── */
 
 html {
@@ -81,7 +96,17 @@ html {
 }
 
 body {
+  min-height: 100vh;
   background-color: var(--color-liquid-abyss);
+  background-image: radial-gradient(
+    ellipse 900px 900px at var(--bg-glow-x, 35%) var(--bg-glow-y, 40%),
+    rgba(202, 240, 248, 0.22) 0%,
+    rgba(0, 180, 216, 0.15) 18%,
+    #03045E 55%,
+    #01012F 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--color-silver-mist);
   font-family: var(--font-matter);
   font-size: var(--text-body);
@@ -89,6 +114,28 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container utama fixed background Ocean Blue Serenity — gradasi murni tanpa noise/tekstur */
+.auros-fixed-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  z-index: -50;
+  pointer-events: none;
+  background-color: var(--color-liquid-abyss);
+  background-image: radial-gradient(
+    ellipse 900px 900px at var(--bg-glow-x, 35%) var(--bg-glow-y, 40%),
+    rgba(202, 240, 248, 0.22) 0%,
+    rgba(0, 180, 216, 0.15) 18%,
+    #03045E 55%,
+    #01012F 100%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  transition: --bg-glow-x 0.5s ease, --bg-glow-y 0.5s ease;
 }
 
 h1, h2, h3 {
@@ -124,28 +171,27 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(90deg, rgb(203, 255, 252) 0%, rgb(237, 255, 254) 26%, rgb(255, 253, 250) 47%, rgb(250, 209, 255) 75%, rgb(203, 255, 252) 100%);
-  background-size: 200% auto;
+  background: var(--gradient-aurora);
   border: none;
   border-radius: var(--radius-buttons);
   padding: 16px 32px;
   font-family: var(--font-arial);
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #1a1a1a;
+  color: var(--color-liquid-deep);
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0, 130, 124, 0.25), 0 0 40px rgba(250, 209, 255, 0.15);
-  transition: opacity 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 119, 182, 0.25), 0 0 35px rgba(0, 180, 216, 0.15);
+  transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
   text-decoration: none;
-  animation: aurora-sweep 8s linear infinite;
   position: relative;
 }
 
 .gradient-pill-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(203, 255, 252, 0.5), 0 0 60px rgba(250, 209, 255, 0.35);
+  box-shadow: 0 0 28px rgba(0, 180, 216, 0.45), 0 0 50px rgba(144, 224, 239, 0.25);
+  filter: brightness(1.04);
 }
 
 .gradient-pill-btn:active {
@@ -159,18 +205,21 @@ h3 {
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-silver-mist);
+  color: var(--color-silver-mist); /* #ADE8F4 */
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, opacity 0.2s ease, font-weight 0.2s ease;
   text-decoration: none;
   padding: 0;
+  opacity: 0.85;
 }
 
 .ghost-nav-link:hover,
 .ghost-nav-link.active {
-  color: var(--color-platinum);
+  color: #ffffff;
+  font-weight: 500;
+  opacity: 1;
 }
 
 /* Section Label — Eyebrow/Kicker */
@@ -188,7 +237,8 @@ h3 {
   background-color: var(--color-liquid-kelp);
   border-radius: var(--radius-cards);
   padding: 36px;
-  border: 1px solid rgba(0, 130, 124, 0.18);
+  border: 1px solid rgba(0, 119, 182, 0.3);
+  box-shadow: 0 20px 60px rgba(3, 4, 94, 0.5);
   position: relative;
   overflow: hidden;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
@@ -198,8 +248,8 @@ h3 {
 
 .surface-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(0, 130, 124, 0.55);
-  box-shadow: 0 16px 36px -12px rgba(0, 130, 124, 0.25), 0 0 24px rgba(250, 209, 255, 0.08);
+  border-color: rgba(0, 180, 216, 0.5);
+  box-shadow: 0 24px 70px rgba(3, 4, 94, 0.65), 0 0 28px rgba(0, 180, 216, 0.15);
 }
 
 /* Recessed Card */
@@ -207,7 +257,7 @@ h3 {
   background-color: var(--color-liquid-deep);
   border-radius: var(--radius-cards);
   padding: 80px 36px;
-  border: 1px solid rgba(0, 130, 124, 0.15);
+  border: 1px solid rgba(0, 119, 182, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -218,6 +268,43 @@ h3 {
   }
 }
 
+/* Nested Content Box (Di dalam card besar) */
+.nested-box,
+.nested-card {
+  background-color: var(--color-liquid-tide);
+  border: 1px solid rgba(0, 119, 182, 0.25);
+  border-radius: var(--radius-small);
+}
+
+/* Filter Pill / Tab */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--radius-buttons);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid rgba(202, 240, 248, 0.2);
+  color: var(--color-silver-mist);
+}
+
+.filter-pill:hover {
+  color: var(--color-platinum);
+  border-color: rgba(0, 180, 216, 0.5);
+}
+
+.filter-pill.active {
+  background-color: var(--color-accent-primary);
+  color: #ffffff;
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 4px 14px rgba(0, 119, 182, 0.4);
+}
+
 /* Arrow Icon Button */
 .arrow-icon-btn {
   display: inline-flex;
@@ -226,21 +313,22 @@ h3 {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-small);
-  background-color: rgba(3, 81, 75, 0.5);
+  background-color: var(--color-liquid-tide);
   color: var(--color-platinum);
-  border: 1px solid rgba(0, 130, 124, 0.25);
+  border: 1px solid rgba(0, 119, 182, 0.3);
   cursor: pointer;
-  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   text-decoration: none;
   flex-shrink: 0;
 }
 
 .surface-card:hover .arrow-icon-btn,
 .arrow-icon-btn:hover {
-  background-color: rgba(0, 130, 124, 0.85);
-  border-color: rgba(203, 255, 252, 0.5);
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-secondary);
+  color: #ffffff;
   transform: translate(3px, -3px);
-  box-shadow: 0 0 12px rgba(0, 130, 124, 0.5);
+  box-shadow: 0 0 12px rgba(0, 180, 216, 0.4);
 }
 
 /* Statistic Counter */
@@ -251,12 +339,12 @@ h3 {
   line-height: 1;
   letter-spacing: -0.046em;
   color: var(--color-lavender-phosphor);
-  text-shadow: 0 0 24px rgba(253, 233, 255, 0.35);
+  text-shadow: 0 0 24px rgba(144, 224, 239, 0.4);
   transition: text-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .stat-number:hover {
-  text-shadow: 0 0 36px rgba(253, 233, 255, 0.65), 0 0 60px rgba(0, 130, 124, 0.4);
+  text-shadow: 0 0 36px rgba(144, 224, 239, 0.7), 0 0 60px rgba(0, 150, 199, 0.45);
   transform: scale(1.02);
 }
 
@@ -297,8 +385,8 @@ h3 {
 /* Placeholder styling for [ISI] fields */
 .placeholder-data {
   display: inline-block;
-  background-color: rgba(253, 233, 255, 0.12);
-  border: 1px dashed rgba(253, 233, 255, 0.3);
+  background-color: rgba(144, 224, 239, 0.12);
+  border: 1px dashed rgba(144, 224, 239, 0.35);
   border-radius: var(--radius-small);
   padding: 2px 10px;
   color: var(--color-lavender-phosphor);
@@ -456,14 +544,6 @@ h3 {
   animation: rotate-slow 30s linear infinite;
 }
 
-@keyframes aurora-sweep {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
 
 @keyframes timeline-beam {
   0% {

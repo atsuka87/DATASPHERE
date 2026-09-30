@@ -5,8 +5,8 @@ import * as THREE from "three";
 
 /**
  * DATASPHERE 2026 — Brand-Defining 3D Bioluminescent Data Orb
- * Rendered in teal-cyan and white dots, picking up canvas deep teal
- * and aurora accent pink with harmonic wave breathing and mouse parallax.
+ * Rendered in ocean blue, electric cyan, and white dots, picking up canvas deep ocean
+ * and aurora accent cyan/phosphor with harmonic wave breathing and mouse parallax.
  */
 
 const OUTER_PARTICLES = 3000;
@@ -81,15 +81,14 @@ export default function ParticleSphere() {
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
 
-          // ── Color Definition ──
-          // Bioluminescent teal & electric cyan
-          vec3 canvasTeal   = vec3(0.00, 0.35, 0.32); // #005952
-          vec3 brightTeal   = vec3(0.00, 0.70, 0.65); // #00b3a6
-          vec3 electricCyan = vec3(0.15, 0.95, 0.92); // #26f2eb
+          // ── Color Definition: Ocean Blue Serenity Final ──
+          vec3 deepOcean    = vec3(0.01, 0.24, 0.54); // #023E8A (liquid-kelp)
+          vec3 oceanBlue    = vec3(0.00, 0.47, 0.71); // #0077B6 (accent-primary)
+          vec3 electricCyan = vec3(0.00, 0.71, 0.85); // #00B4D8 (accent-secondary)
           
-          // Pure vibrant aurora pink & lavender phosphor (Auros accents)
-          vec3 vividPink    = vec3(1.00, 0.35, 0.85); // #ff59d9
-          vec3 pastelPink   = vec3(0.98, 0.76, 0.98); // #fad1ff
+          // Phosphor blue & soft mist highlights
+          vec3 phosphorBlue = vec3(0.56, 0.88, 0.94); // #90E0EF (lavender-phosphor)
+          vec3 mistLight    = vec3(0.79, 0.94, 0.97); // #CAF0F8 (liquid-mist)
           
           // Diamond white sparkle
           vec3 whiteDot     = vec3(1.00, 1.00, 1.00);
@@ -101,21 +100,21 @@ export default function ParticleSphere() {
           float wavePulse = sin(uTime * 1.0 + norm.y * 2.5 + norm.x * 1.8) * 0.5 + 0.5;
 
           // Color logic:
-          // Lower hemisphere / body: Canvas deep teal to electric cyan
-          float tealFactor = smoothstep(-0.8, 0.4, lat);
-          vec3 tealBase = mix(canvasTeal, mix(brightTeal, electricCyan, tealFactor), 0.85);
+          // Lower hemisphere / body: Deep ocean to electric cyan
+          float blueFactor = smoothstep(-0.8, 0.4, lat);
+          vec3 blueBase = mix(deepOcean, mix(oceanBlue, electricCyan, blueFactor), 0.85);
 
-          // Upper crest / designated pink particles: Vivid Aurora Pink
-          vec3 pinkCol = mix(vividPink, pastelPink, 0.4 + 0.3 * sin(uTime + norm.z));
+          // Upper crest / designated phosphor particles: Phosphor Blue
+          vec3 phosphorCol = mix(phosphorBlue, mistLight, 0.4 + 0.3 * sin(uTime + norm.z));
 
-          vec3 finalColor = tealBase;
+          vec3 finalColor = blueBase;
 
           if (isSparkle > 0.5) {
             finalColor = whiteDot;
           } else if (isPinkAccent > 0.5 || (lat > 0.25 && wavePulse > 0.45)) {
-            // Naturally blend in aurora pink at top and in active wave pulses
+            // Naturally blend in phosphor blue at top and in active wave pulses
             float pBlend = isPinkAccent > 0.5 ? 0.9 : smoothstep(0.25, 0.8, lat) * 0.85;
-            finalColor = mix(tealBase, pinkCol, pBlend);
+            finalColor = mix(blueBase, phosphorCol, pBlend);
           }
 
           vColor = finalColor;

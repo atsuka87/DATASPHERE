@@ -49,7 +49,7 @@ export default function CategoryCards() {
       <div
         className="absolute top-1/3 -right-[15%] w-[500px] h-[500px] rounded-full pointer-events-none opacity-20"
         style={{
-          background: "radial-gradient(circle, rgba(0, 130, 124, 0.3) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(0, 150, 199, 0.3) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -80,14 +80,14 @@ export default function CategoryCards() {
                   className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{
                     background:
-                      "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 130, 124, 0.22), transparent 70%)",
+                      "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 150, 199, 0.25), transparent 70%)",
                   }}
                   aria-hidden="true"
                 />
 
                 {/* Card Top Row: Number & Arrow */}
                 <div className="flex items-start justify-between gap-[16px] relative z-10">
-                  <span className="text-[12px] tracking-[0.16em] font-medium text-slate-deep group-hover:text-liquid-mist transition-colors duration-300">
+                  <span className="text-[12px] tracking-[0.16em] font-medium text-silver-mist group-hover:text-platinum transition-colors duration-300">
                     {cat.number}
                   </span>
                   <Link
@@ -119,7 +119,7 @@ export default function CategoryCards() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-silver-mist text-[15px] leading-[1.45] relative z-10">
+                <p className="text-liquid-mist text-[15px] leading-[1.45] relative z-10">
                   {cat.description}
                 </p>
 
@@ -128,7 +128,7 @@ export default function CategoryCards() {
                   {cat.criteria.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] uppercase tracking-[0.14em] text-liquid-mist bg-liquid-abyss/70 border border-liquid-kelp/80 group-hover:border-teal-700/40 rounded-[var(--radius-small)] px-[10px] py-[4px] transition-all duration-200"
+                      className="text-[10px] uppercase tracking-[0.14em] text-liquid-mist bg-liquid-tide border border-accent-primary/40 group-hover:border-accent-secondary/50 rounded-[var(--radius-small)] px-[10px] py-[4px] transition-all duration-200"
                     >
                       {tag}
                     </span>

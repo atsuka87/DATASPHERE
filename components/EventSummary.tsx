@@ -8,7 +8,7 @@ export default function EventSummary() {
       <div
         className="absolute top-1/2 -left-[10%] w-[450px] h-[450px] rounded-full pointer-events-none -translate-y-1/2 opacity-25"
         style={{
-          background: "radial-gradient(circle, rgba(0, 130, 124, 0.25) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(0, 150, 199, 0.25) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -47,7 +47,7 @@ export default function EventSummary() {
 
         {/* Stats Row with Animated Number Counters */}
         <AnimateOnScroll animation="fade-up" delay={400}>
-          <div className="flex flex-wrap gap-[48px] mt-[28px] pt-[24px] border-t border-liquid-kelp/60">
+          <div className="flex flex-wrap gap-[48px] mt-[28px] pt-[24px] border-t border-liquid-tide">
             <StatCounter end={3} label="Kategori Lomba" />
             <StatCounter end={50} suffix="+" label="Target Sekolah" />
             <StatCounter end={1} label="Expo Besar" />

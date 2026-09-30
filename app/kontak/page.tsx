@@ -82,14 +82,14 @@ export default function KontakPage() {
               {contactChannels.map((c) => (
                 <div
                   key={c.name}
-                  className="surface-card flex flex-col justify-between gap-[20px] p-[28px] md:p-[32px] border border-liquid-kelp hover:border-teal-500/40 transition-all duration-300"
+                  className="surface-card flex flex-col justify-between gap-[20px] p-[28px] md:p-[32px]"
                 >
                   <div className="flex items-start gap-[16px]">
-                    <span className="text-[28px] p-[10px] rounded-[var(--radius-small)] bg-liquid-deep border border-liquid-kelp flex-shrink-0">
+                    <span className="text-[28px] p-[10px] rounded-[var(--radius-small)] bg-liquid-tide border border-accent-primary/40 flex-shrink-0">
                       {c.icon}
                     </span>
                     <div className="flex flex-col gap-[4px]">
-                      <span className="text-[12px] uppercase tracking-[0.14em] text-teal-400 font-semibold">
+                      <span className="text-[12px] uppercase tracking-[0.14em] text-lavender-phosphor font-semibold">
                         {c.name}
                       </span>
                       <h3 className="text-platinum text-[18px] font-medium leading-[1.3]">
@@ -105,7 +105,7 @@ export default function KontakPage() {
                     href={c.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ghost-nav-link text-[13px] text-teal-300 hover:text-white flex items-center gap-[6px] font-medium self-start mt-auto"
+                    className="ghost-nav-link text-[13px] text-silver-mist hover:text-white flex items-center gap-[6px] font-medium self-start mt-auto"
                   >
                     <span>{c.actionText}</span>
                     <span>→</span>
@@ -119,10 +119,10 @@ export default function KontakPage() {
         {/* Direct Inquiry Message Form */}
         <section className="py-[32px]">
           <div className="page-container max-w-[800px]">
-            <div className="surface-card p-[32px] md:p-[48px] border border-liquid-kelp/80">
+            <div className="surface-card p-[32px] md:p-[48px]">
               {submitted ? (
                 <div className="flex flex-col items-center text-center gap-[16px] py-[32px]">
-                  <div className="w-[56px] h-[56px] rounded-full bg-teal-500/20 text-teal-300 text-[26px] flex items-center justify-center border border-teal-500/40">
+                  <div className="w-[56px] h-[56px] rounded-full bg-liquid-tide text-liquid-mist text-[26px] flex items-center justify-center border border-accent-secondary/50">
                     ✓
                   </div>
                   <h2 className="text-platinum text-[24px]">Pesan Berhasil Terkirim!</h2>
@@ -166,7 +166,7 @@ export default function KontakPage() {
                         value={formData.nama}
                         onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
                         placeholder="Nama kamu / Guru"
-                        className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400"
+                        className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                       />
                     </div>
 
@@ -178,7 +178,7 @@ export default function KontakPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="email@sekolah.sch.id / gmail"
-                        className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400"
+                        className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                       />
                     </div>
 
@@ -190,7 +190,7 @@ export default function KontakPage() {
                         value={formData.no_hp}
                         onChange={(e) => setFormData({ ...formData, no_hp: e.target.value })}
                         placeholder="08xxxxxxxxxx"
-                        className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400"
+                        className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                       />
                     </div>
 
@@ -201,7 +201,7 @@ export default function KontakPage() {
                         value={formData.asal_sekolah}
                         onChange={(e) => setFormData({ ...formData, asal_sekolah: e.target.value })}
                         placeholder="SMA / SMK / MA"
-                        className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400"
+                        className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                       />
                     </div>
                   </div>
@@ -211,7 +211,7 @@ export default function KontakPage() {
                     <select
                       value={formData.subjek}
                       onChange={(e) => setFormData({ ...formData, subjek: e.target.value })}
-                      className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400"
+                      className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                     >
                       <option value="Pertanyaan Umum">Pertanyaan Umum</option>
                       <option value="Kendala Pendaftaran">Kendala Pendaftaran</option>
@@ -230,7 +230,7 @@ export default function KontakPage() {
                       value={formData.pesan}
                       onChange={(e) => setFormData({ ...formData, pesan: e.target.value })}
                       placeholder="Tuliskan pertanyaan atau kebutuhan bantuanmu secara detail di sini..."
-                      className="bg-liquid-deep border border-liquid-kelp text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-teal-400 resize-none"
+                      className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary resize-none transition-colors"
                     />
                   </div>
 

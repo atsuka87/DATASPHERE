@@ -47,12 +47,12 @@ export default function BioluminescentBackground() {
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("mouseleave", handleMouseLeave);
 
-    // Color palette strictly from DESIGN.md
+    // Color palette strictly from Ocean Blue Serenity
     const colors = [
-      "rgba(0, 130, 124, ",   // Bioluminescent Teal
-      "rgba(0, 229, 219, ",   // Electric Cyan
-      "rgba(203, 255, 252, ", // Aurora Aqua
-      "rgba(250, 209, 255, ", // Aurora Lavender Pink
+      "rgba(0, 119, 182, ",   // Accent Primary (#0077B6)
+      "rgba(0, 180, 216, ",   // Accent Secondary (#00B4D8)
+      "rgba(202, 240, 248, ", // Mist Light Blue (#CAF0F8)
+      "rgba(144, 224, 239, ", // Phosphor Blue (#90E0EF)
       "rgba(255, 255, 255, ", // Platinum Sparkle
     ];
 
@@ -61,15 +61,15 @@ export default function BioluminescentBackground() {
     const particles: Particle[] = [];
 
     for (let i = 0; i < particleCount; i++) {
-      const isPink = Math.random() > 0.75;
-      const isWhite = !isPink && Math.random() > 0.7;
-      const colorPrefix = isPink
+      const isPhosphor = Math.random() > 0.75;
+      const isWhite = !isPhosphor && Math.random() > 0.7;
+      const colorPrefix = isPhosphor
         ? colors[3]
         : isWhite
         ? colors[4]
         : colors[Math.floor(Math.random() * 3)];
 
-      const baseAlpha = isWhite ? 0.65 : isPink ? 0.5 : 0.35 + Math.random() * 0.3;
+      const baseAlpha = isWhite ? 0.65 : isPhosphor ? 0.5 : 0.35 + Math.random() * 0.3;
 
       particles.push({
         x: Math.random() * width,
@@ -126,7 +126,7 @@ export default function BioluminescentBackground() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * (1 + mouseBoost * 0.4), 0, Math.PI * 2);
         ctx.fillStyle = `${p.color}${currentAlpha})`;
-        ctx.shadowColor = p.color === colors[3] ? "rgba(250, 209, 255, 0.6)" : "rgba(0, 130, 124, 0.6)";
+        ctx.shadowColor = p.color === colors[3] ? "rgba(144, 224, 239, 0.6)" : "rgba(0, 150, 199, 0.6)";
         ctx.shadowBlur = p.radius * 6;
         ctx.fill();
 
@@ -142,7 +142,7 @@ export default function BioluminescentBackground() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(0, 130, 124, ${lineAlpha})`;
+            ctx.strokeStyle = `rgba(0, 150, 199, ${lineAlpha})`;
             ctx.lineWidth = 0.8;
             ctx.shadowBlur = 0;
             ctx.stroke();

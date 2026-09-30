@@ -17,7 +17,7 @@ const timelineStages = [
   {
     phase: "01",
     badge: "Fase Aktif",
-    badgeColor: "text-teal-300 bg-teal-950/80 border-teal-500/40",
+    badgeColor: "text-liquid-mist bg-accent-primary/30 border-accent-secondary/50",
     title: "Pendaftaran Gelombang Terbuka",
     date: "1 September – 25 November 2026",
     location: "Online Portal",
@@ -32,7 +32,7 @@ const timelineStages = [
   {
     phase: "02",
     badge: "Mendatang",
-    badgeColor: "text-silver-mist bg-liquid-deep border-liquid-kelp",
+    badgeColor: "text-silver-mist bg-liquid-tide border-accent-primary/30",
     title: "Technical Meeting & Workshop Data",
     date: "28 Maret 2026",
     location: "Zoom & YouTube Live Streaming",
@@ -47,7 +47,7 @@ const timelineStages = [
   {
     phase: "03",
     badge: "Mendatang",
-    badgeColor: "text-silver-mist bg-liquid-deep border-liquid-kelp",
+    badgeColor: "text-silver-mist bg-liquid-tide border-accent-primary/30",
     title: "Babak Penyisihan & Pengumpulan Karya",
     date: "1 – 15 April 2026",
     location: "Online Submission System",
@@ -62,7 +62,7 @@ const timelineStages = [
   {
     phase: "04",
     badge: "Mendatang",
-    badgeColor: "text-silver-mist bg-liquid-deep border-liquid-kelp",
+    badgeColor: "text-silver-mist bg-liquid-tide border-accent-primary/30",
     title: "Pengumuman Finalis (Top 10 Tiap Kategori)",
     date: "22 April 2026",
     location: "Website & Instagram Resmi",
@@ -77,7 +77,7 @@ const timelineStages = [
   {
     phase: "05",
     badge: "Mendatang",
-    badgeColor: "text-silver-mist bg-liquid-deep border-liquid-kelp",
+    badgeColor: "text-silver-mist bg-liquid-tide border-accent-primary/30",
     title: "Mentoring & Pembuatan Poster Expo",
     date: "25 – 30 April 2026",
     location: "Hybrid (Online Coaching)",
@@ -91,7 +91,7 @@ const timelineStages = [
   {
     phase: "06",
     badge: "Puncak Acara",
-    badgeColor: "text-lavender-phosphor bg-purple-950/70 border-pink-500/40",
+    badgeColor: "text-platinum bg-accent-primary border-accent-secondary",
     title: "Grand Final, Capstone Expo & Awarding",
     date: "8 – 9 Mei 2026",
     location: "Gedung Aula Utama IIB Darmajaya, Bandar Lampung",
@@ -158,23 +158,23 @@ export default function TimelinePage() {
             </p>
 
             {/* Live Countdown Box */}
-            <div className="w-full max-w-[760px] mt-[24px] p-[28px] md:p-[36px] rounded-[var(--radius-cards)] bg-liquid-kelp/40 border border-teal-500/30 backdrop-blur-sm relative overflow-hidden">
+            <div className="w-full max-w-[760px] mt-[24px] p-[28px] md:p-[36px] rounded-[var(--radius-cards)] bg-liquid-kelp border border-accent-primary/40 relative overflow-hidden shadow-2xl shadow-liquid-abyss/80">
               <div
                 className="absolute inset-0 pointer-events-none opacity-20"
                 style={{
                   background:
-                    "radial-gradient(circle 400px at 50% 50%, rgba(0, 130, 124, 0.4), transparent 70%)",
+                    "radial-gradient(circle 400px at 50% 50%, rgba(0, 180, 216, 0.3), transparent 70%)",
                 }}
                 aria-hidden="true"
               />
 
               <div className="relative z-10 flex flex-col items-center gap-[16px]">
-                <span className="section-label text-teal-300 text-[11px] tracking-[0.16em]">
+                <span className="section-label text-lavender-phosphor text-[11px] tracking-[0.16em]">
                   COUNTDOWN PENUTUPAN PENDAFTARAN
                 </span>
 
                 <div className="grid grid-cols-4 gap-[12px] sm:gap-[20px] w-full max-w-[540px]">
-                  <div className="flex flex-col items-center bg-liquid-abyss/80 border border-liquid-kelp py-[16px] px-[8px] rounded-[var(--radius-small)]">
+                  <div className="flex flex-col items-center bg-liquid-tide border border-accent-primary/30 py-[16px] px-[8px] rounded-[var(--radius-small)]">
                     <span className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold text-lavender-phosphor font-[var(--font-matter)] leading-none">
                       {String(timeLeft.days).padStart(2, "0")}
                     </span>
@@ -183,7 +183,7 @@ export default function TimelinePage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-col items-center bg-liquid-abyss/80 border border-liquid-kelp py-[16px] px-[8px] rounded-[var(--radius-small)]">
+                  <div className="flex flex-col items-center bg-liquid-tide border border-accent-primary/30 py-[16px] px-[8px] rounded-[var(--radius-small)]">
                     <span className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold text-lavender-phosphor font-[var(--font-matter)] leading-none">
                       {String(timeLeft.hours).padStart(2, "0")}
                     </span>
@@ -192,7 +192,7 @@ export default function TimelinePage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-col items-center bg-liquid-abyss/80 border border-liquid-kelp py-[16px] px-[8px] rounded-[var(--radius-small)]">
+                  <div className="flex flex-col items-center bg-liquid-tide border border-accent-primary/30 py-[16px] px-[8px] rounded-[var(--radius-small)]">
                     <span className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold text-lavender-phosphor font-[var(--font-matter)] leading-none">
                       {String(timeLeft.minutes).padStart(2, "0")}
                     </span>
@@ -201,8 +201,8 @@ export default function TimelinePage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-col items-center bg-liquid-abyss/80 border border-liquid-kelp py-[16px] px-[8px] rounded-[var(--radius-small)]">
-                    <span className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold text-teal-300 font-[var(--font-matter)] leading-none">
+                  <div className="flex flex-col items-center bg-liquid-tide border border-accent-primary/30 py-[16px] px-[8px] rounded-[var(--radius-small)]">
+                    <span className="text-[clamp(1.8rem,4vw,3.2rem)] font-bold text-lavender-phosphor font-[var(--font-matter)] leading-none">
                       {String(timeLeft.seconds).padStart(2, "0")}
                     </span>
                     <span className="text-[11px] uppercase tracking-[0.12em] text-silver-mist mt-[6px]">
@@ -211,7 +211,7 @@ export default function TimelinePage() {
                   </div>
                 </div>
 
-                <p className="text-slate-deep text-[13px] mt-[4px]">
+                <p className="text-silver-mist text-[13px] mt-[4px]">
                   Batas akhir pendaftaran: 25 November 2026 pukul 23:59 WIB
                 </p>
               </div>
@@ -225,11 +225,11 @@ export default function TimelinePage() {
             {timelineStages.map((stage, idx) => (
               <div
                 key={stage.phase}
-                className="surface-card flex flex-col md:flex-row gap-[24px] p-[28px] md:p-[36px] border border-liquid-kelp/80 hover:border-teal-500/40 transition-all duration-300 relative"
+                className="surface-card flex flex-col md:flex-row gap-[24px] p-[28px] md:p-[36px] relative"
               >
                 {/* Stage Indicator Column */}
                 <div className="flex md:flex-col items-center md:items-start justify-between md:justify-start gap-[12px] md:w-[160px] flex-shrink-0">
-                  <div className="w-[52px] h-[52px] rounded-full bg-liquid-deep border border-teal-500/30 flex items-center justify-center font-bold text-[20px] text-platinum tracking-[0.06em]">
+                  <div className="w-[52px] h-[52px] rounded-full bg-liquid-tide border border-accent-primary/40 flex items-center justify-center font-bold text-[20px] text-platinum tracking-[0.06em]">
                     {stage.phase}
                   </div>
                   <span
@@ -245,21 +245,21 @@ export default function TimelinePage() {
                     <h2 className="text-platinum text-[24px] font-medium leading-[1.2]">
                       {stage.title}
                     </h2>
-                    <span className="text-teal-400 text-[14px] font-medium tracking-[0.02em] whitespace-nowrap">
+                    <span className="text-accent-secondary text-[14px] font-medium tracking-[0.02em] whitespace-nowrap">
                       {stage.date}
                     </span>
                   </div>
 
-                  <span className="text-slate-deep text-[12px] uppercase tracking-[0.1em]">
+                  <span className="text-silver-mist text-[12px] uppercase tracking-[0.1em]">
                     📍 {stage.location}
                   </span>
 
-                  <p className="text-silver-mist text-[15px] leading-[1.45]">
+                  <p className="text-liquid-mist text-[15px] leading-[1.45]">
                     {stage.summary}
                   </p>
 
                   {/* Bullet Highlights */}
-                  <ul className="flex flex-col gap-[6px] mt-[4px] pt-[12px] border-t border-liquid-deep text-[14px] text-liquid-mist/90 list-disc list-inside">
+                  <ul className="flex flex-col gap-[6px] mt-[4px] pt-[12px] border-t border-liquid-tide text-[14px] text-liquid-mist/90 list-disc list-inside">
                     {stage.details.map((detail, dIdx) => (
                       <li key={dIdx} className="leading-[1.4]">
                         {detail}
@@ -271,9 +271,9 @@ export default function TimelinePage() {
             ))}
 
             {/* Bottom CTA Card */}
-            <div className="recessed-card flex flex-col sm:flex-row items-center justify-between gap-[24px] p-[32px] md:p-[48px] mt-[24px] border border-liquid-kelp">
+            <div className="recessed-card flex flex-col sm:flex-row items-center justify-between gap-[24px] p-[32px] md:p-[48px] mt-[24px]">
               <div className="flex flex-col gap-[6px] text-center sm:text-left">
-                <span className="section-label text-teal-300">JANGAN TERTINGGAL</span>
+                <span className="section-label text-lavender-phosphor">JANGAN TERTINGGAL</span>
                 <h3 className="text-platinum text-[24px]">Segera Daftarkan Tim Sekolahmu</h3>
                 <p className="text-silver-mist text-[14px]">Kuota terbatas untuk tiap kategori perlombaan.</p>
               </div>

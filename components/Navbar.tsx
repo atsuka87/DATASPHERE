@@ -47,14 +47,13 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`ghost-nav-link relative py-[6px] transition-all duration-200 ${
-                  isActive ? "text-platinum font-medium" : "text-silver-mist hover:text-platinum"
+                  isActive ? "active text-platinum font-medium" : "text-silver-mist hover:text-platinum"
                 }`}
               >
                 {link.label}
                 {isActive && (
                   <span
-                    className="absolute -bottom-[2px] left-0 right-0 h-[2px] rounded-full"
-                    style={{ background: "var(--gradient-bioluminescent)" }}
+                    className="absolute -bottom-[2px] left-0 right-0 h-[2px] rounded-full bg-accent-secondary"
                   />
                 )}
               </Link>
@@ -107,13 +106,13 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`ghost-nav-link text-[15px] flex items-center justify-between ${
-                  isActive ? "text-platinum font-medium" : "text-silver-mist"
+                  isActive ? "active text-platinum font-medium" : "text-silver-mist"
                 }`}
                 onClick={() => setMobileOpen(false)}
               >
                 <span>{link.label}</span>
                 {isActive && (
-                  <span className="w-[6px] h-[6px] rounded-full bg-teal-400" />
+                  <span className="w-[6px] h-[6px] rounded-full bg-accent-secondary" />
                 )}
               </Link>
             );
