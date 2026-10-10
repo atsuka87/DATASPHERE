@@ -1,32 +1,33 @@
 import AnimateOnScroll from "./AnimateOnScroll";
 
+// Cuplikan 4 tonggak utama — jadwal lengkap ada di /timeline
 const timelineSteps = [
   {
     phase: "01",
     title: "Pendaftaran",
-    description: "Registrasi tim secara online melalui website DATASPHERE.",
-    date: "Februari – Maret 2026",
+    description: "Early Bid Rp75.000 (12–25 Okt), Normal Bid Rp100.000 (26 Okt–12 Nov). Berkas paling lambat 12 Nov 23.59 WIB.",
+    date: "12 Okt – 12 Nov 2026",
     status: "active",
   },
   {
     phase: "02",
-    title: "Penyisihan",
-    description: "Babak eliminasi untuk masing-masing kategori lomba.",
-    date: "Maret 2026",
+    title: "Seminar & Penyisihan",
+    description: "Seminar & Workshop 12 Nov (wajib), Technical Meeting 16 Nov, penyisihan online 17–26 Nov.",
+    date: "12 – 26 November 2026",
     status: "upcoming",
   },
   {
     phase: "03",
-    title: "Final",
-    description: "Babak final bagi tim terbaik di setiap kategori.",
-    date: "April 2026",
+    title: "Final Offline",
+    description: "Finalis diumumkan 1 Des, lalu bertanding di Kampus IIB Darmajaya. Check-in 07.30 WIB.",
+    date: "7 Desember 2026",
     status: "upcoming",
   },
   {
     phase: "04",
-    title: "Capstone Expo",
-    description: "Pameran hasil karya dan pengumuman pemenang.",
-    date: "Mei 2026",
+    title: "Awarding",
+    description: "Pengumuman pemenang masing-masing cabang dan penyerahan hadiah.",
+    date: "10 Desember 2026",
     status: "upcoming",
   },
 ];
@@ -38,8 +39,8 @@ export default function TimelinePreview() {
         {/* Section Label */}
         <AnimateOnScroll animation="fade-up">
           <div className="flex flex-col gap-[16px] max-w-[600px]">
-            <span className="section-label">TIMELINE</span>
-            <h2>Perjalanan Menuju Data Expo</h2>
+            <span className="section-label">JADWAL</span>
+            <h2>Perjalanan Menuju Final</h2>
           </div>
         </AnimateOnScroll>
 
@@ -64,9 +65,9 @@ export default function TimelinePreview() {
                 animation="fade-up"
                 delay={index * 140}
               >
-                <div className="flex flex-col gap-[16px] relative group">
+                <div className="flex flex-row sm:flex-col gap-[16px] relative group">
                   {/* Phase Number Circle with Pulsing Glow */}
-                  <div className="flex items-center gap-[16px] lg:flex-col lg:items-start relative">
+                  <div className="flex items-start sm:items-center gap-[16px] lg:flex-col lg:items-start relative">
                     <div className="relative flex-shrink-0">
                       {/* Active pulsing ring for phase 01 */}
                       {step.status === "active" && (
@@ -103,12 +104,12 @@ export default function TimelinePreview() {
 
                     {/* Vertical connector — mobile only */}
                     {index < timelineSteps.length - 1 && (
-                      <div className="sm:hidden absolute left-[27px] top-[56px] w-[2px] h-[calc(100%+24px)] bg-liquid-kelp" />
+                      <div className="sm:hidden absolute left-[27px] top-[60px] w-[2px] h-[calc(100%-36px)] bg-liquid-kelp" />
                     )}
                   </div>
 
                   {/* Content */}
-                  <div className="flex flex-col gap-[8px] pl-[72px] sm:pl-0">
+                  <div className="flex flex-col gap-[8px] pb-[8px] sm:pb-0">
                     <h3 className="text-[22px] text-platinum leading-[1.3] tracking-[-0.02em] transition-colors duration-200 group-hover:text-liquid-mist">
                       {step.title}
                     </h3>

@@ -6,7 +6,7 @@ export default function CTASection() {
     <section className="py-[var(--section-gap)] relative">
       <div className="page-container">
         <AnimateOnScroll animation="fade-up">
-          <div className="recessed-card flex flex-col items-center text-center gap-[24px] relative overflow-hidden">
+          <div className="recessed-card px-[20px] py-[56px] md:px-[48px] md:py-[120px] flex flex-col items-center text-center gap-[20px] md:gap-[24px] relative overflow-hidden">
             {/* Ambient deep-water bioluminescent glow inside recessed card */}
             <div
               className="absolute inset-0 pointer-events-none animate-bioluminescent-breathe"
@@ -16,6 +16,8 @@ export default function CTASection() {
               }}
               aria-hidden="true"
             />
+
+            <div className="absolute inset-0 data-grid-bg pointer-events-none" aria-hidden="true" />
 
             {/* Eyebrow */}
             <span className="section-label relative z-10 text-silver-mist">
@@ -29,18 +31,18 @@ export default function CTASection() {
 
             {/* Body */}
             <p className="text-silver-mist text-[16px] leading-[1.4] max-w-[540px] relative z-10">
-              Daftarkan timmu sekarang dan tunjukkan kemampuan data science-mu.
-              Kompetisi terbuka untuk seluruh siswa SMA/SMK.
+              Daftarkan dirimu atau timmu sekarang. Kompetisi terbuka untuk siswa
+              SMA/SMK/sederajat se-Provinsi Lampung, seminar terbuka untuk umum.
             </p>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-[16px] mt-[12px] relative z-10">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-[12px] sm:gap-[16px] mt-[8px] sm:mt-[12px] relative z-10">
               <Link href="/daftar" className="gradient-pill-btn px-[36px] py-[16px]">
                 Daftar Sekarang
               </Link>
               <Link
                 href="/kontak"
-                className="ghost-nav-link text-[13px] tracking-[0.12em] py-[16px] px-[24px] rounded-[var(--radius-small)] border border-transparent hover:border-accent-primary hover:bg-liquid-tide/60 transition-all duration-300"
+                className="ghost-nav-link text-center text-[13px] tracking-[0.12em] py-[16px] px-[24px] rounded-[var(--radius-small)] border border-transparent hover:border-accent-primary hover:bg-liquid-tide/60 transition-all duration-300"
               >
                 Hubungi Panitia →
               </Link>

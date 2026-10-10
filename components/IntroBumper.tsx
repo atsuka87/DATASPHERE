@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useSyncExternalStore } from "react";
 
 /**
  * DATASPHERE 2026 — Intro Bumper Animation
@@ -16,6 +16,15 @@ import { useEffect, useRef, useState, useCallback } from "react";
  */
 
 const STORAGE_KEY = "datasphere_intro_seen";
+
+function readSeen() {
+  try {
+    return sessionStorage.getItem(STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+const noopSubscribe = () => () => {};
 const PARTICLE_COUNT = 200;
 const PARTICLE_COLORS = ["#48cae4", "#0096c7", "#00b4d8", "#90e0ef"];
 
@@ -35,6 +44,8 @@ interface Particle {
 
 export default function IntroBumper() {
   const [isVisible, setIsVisible] = useState(true);
+  // Server selalu render overlay; di client langsung disembunyikan bila sudah pernah dilihat
+  const alreadySeen = useSyncExternalStore(noopSubscribe, readSeen, () => false);
   const [showSkip, setShowSkip] = useState(false);
   const [isSkipping, setIsSkipping] = useState(false);
 
@@ -75,15 +86,8 @@ export default function IntroBumper() {
   }, [finishIntro]);
 
   useEffect(() => {
-    // 1. Check if already seen in current session
-    try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "true") {
-        setIsVisible(false);
-        return;
-      }
-    } catch {
-      // Ignore sessionStorage access errors
-    }
+    // 1. Sudah pernah dilihat di sesi ini → tidak perlu animasi
+    if (readSeen()) return;
 
     // 2. Prevent body scroll while bumper is active
     const originalOverflow = document.body.style.overflow;
@@ -101,10 +105,12 @@ export default function IntroBumper() {
 
     if (prefersReducedMotion) {
       // Directly show logo + tagline without particle canvas animation
-      setWordmarkOpacity(1);
-      setWordmarkScale(1);
-      setTaglineOpacity(1);
-      setTaglineY(0);
+      const showFrame = requestAnimationFrame(() => {
+        setWordmarkOpacity(1);
+        setWordmarkScale(1);
+        setTaglineOpacity(1);
+        setTaglineY(0);
+      });
 
       // Fade out after 1 second
       const reducedMotionTimer = setTimeout(() => {
@@ -119,6 +125,7 @@ export default function IntroBumper() {
       return () => {
         clearTimeout(skipTimer);
         clearTimeout(reducedMotionTimer);
+        cancelAnimationFrame(showFrame);
         document.body.style.overflow = originalOverflow;
       };
     }
@@ -328,7 +335,7 @@ export default function IntroBumper() {
     };
   }, [finishIntro]);
 
-  if (!isVisible) return null;
+  if (!isVisible || alreadySeen) return null;
 
   return (
     <div
@@ -346,7 +353,7 @@ export default function IntroBumper() {
       {/* Inline early-exit script to prevent flash if already seen */}
       <script
         dangerouslySetInnerHTML={{
-          __html: `if(typeof window!=='undefined'&&window.sessionStorage.getItem('${STORAGE_KEY}')==='true'){var el=document.getElementById('datasphere-intro-bumper');if(el){el.style.display='none';}}`,
+          __html: `try{if(sessionStorage.getItem('${STORAGE_KEY}')==='true'){document.documentElement.classList.add('intro-seen')}}catch(e){}`,
         }}
       />
 
@@ -357,8 +364,8 @@ export default function IntroBumper() {
       />
 
       {/* Center Wordmark & Tagline */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
-        <h1
+      <div aria-hidden="true" className="relative z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
+        <div
           style={{
             opacity: wordmarkOpacity,
             transform: `scale(${wordmarkScale})`,
@@ -366,7 +373,7 @@ export default function IntroBumper() {
           className="font-matter font-medium text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#ffffff] tracking-[0.22em] uppercase leading-none drop-shadow-[0_0_35px_rgba(72,202,228,0.45)] transition-transform duration-75"
         >
           DATASPHERE
-        </h1>
+        </div>
         <p
           style={{
             opacity: taglineOpacity,

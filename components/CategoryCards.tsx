@@ -3,36 +3,18 @@
 import Link from "next/link";
 import AnimateOnScroll from "./AnimateOnScroll";
 import { MouseEvent } from "react";
+import { CATEGORIES } from "@/lib/event-data";
+import CategoryGlyph from "./CategoryGlyph";
 
-const categories = [
-  {
-    id: "dataviz",
-    number: "01",
-    title: "DataViz Challenge",
-    description:
-      "Buat dashboard visualisasi data dari dataset yang disediakan. Gunakan Excel, Google Sheets, Looker Studio, atau Power BI untuk menyajikan insight yang bermakna dengan desain yang memikat.",
-    criteria: ["Ketepatan Data", "Visualisasi", "Insight", "Storytelling", "Desain"],
-    href: "/kategori#dataviz",
-  },
-  {
-    id: "quiz",
-    number: "02",
-    title: "Data Quiz Battle",
-    description:
-      "Cerdas cermat data science secara online. Uji pemahamanmu tentang literasi data, statistika dasar, interpretasi grafik, spreadsheet, dan konsep AI/ML dasar.",
-    criteria: ["Literasi Data", "Statistika", "Grafik", "Spreadsheet", "AI/ML"],
-    href: "/kategori#quiz",
-  },
-  {
-    id: "research",
-    number: "03",
-    title: "Young Data Researcher",
-    description:
-      "Susun karya ilmiah berbasis data — dari identifikasi masalah, pengumpulan data, pemilihan metode, analisis, hingga temuan dan rekomendasi yang berdampak.",
-    criteria: ["Masalah", "Data", "Metode", "Analisis", "Rekomendasi"],
-    href: "/kategori#research",
-  },
-];
+const categories = CATEGORIES.map((c) => ({
+  id: c.id,
+  number: c.number,
+  title: c.name,
+  theme: c.theme,
+  description: c.short,
+  criteria: [`${c.teamLabel} · ${c.grades}`, `Kuota ${c.quota}`, `Tema: ${c.theme}`],
+  href: `/kategori#${c.id}`,
+}));
 
 export default function CategoryCards() {
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
@@ -44,7 +26,7 @@ export default function CategoryCards() {
   };
 
   return (
-    <section className="py-[var(--section-gap)] relative">
+    <section className="py-[var(--section-gap)] relative overflow-x-clip">
       {/* Ambient background glow */}
       <div
         className="absolute top-1/3 -right-[15%] w-[500px] h-[500px] rounded-full pointer-events-none opacity-20"
@@ -73,7 +55,7 @@ export default function CategoryCards() {
             >
               <div
                 onMouseMove={handleMouseMove}
-                className="surface-card flex flex-col gap-[20px] h-full group transition-all duration-300 relative overflow-hidden"
+                className="surface-card p-[22px] sm:p-[36px] flex flex-col gap-[18px] sm:gap-[20px] h-full group transition-all duration-300 relative overflow-hidden"
               >
                 {/* Interactive cursor spotlight effect */}
                 <div
@@ -113,6 +95,11 @@ export default function CategoryCards() {
                   </Link>
                 </div>
 
+                {/* Ilustrasi data animasi */}
+                <div className="relative z-10 rounded-[var(--radius-small)] bg-liquid-tide/70 border border-accent-primary/25 px-[16px] py-[12px] flex justify-center">
+                  <CategoryGlyph id={cat.id} />
+                </div>
+
                 {/* Title */}
                 <h3 className="text-platinum text-[28px] leading-[1.1] relative z-10 transition-colors duration-300 group-hover:text-liquid-mist">
                   {cat.title}
@@ -128,7 +115,7 @@ export default function CategoryCards() {
                   {cat.criteria.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] uppercase tracking-[0.14em] text-liquid-mist bg-liquid-tide border border-accent-primary/40 group-hover:border-accent-secondary/50 rounded-[var(--radius-small)] px-[10px] py-[4px] transition-all duration-200"
+                      className="text-[12px] uppercase tracking-[0.1em] text-liquid-mist bg-liquid-tide border border-accent-primary/40 group-hover:border-accent-secondary/50 rounded-[var(--radius-small)] px-[10px] py-[4px] transition-all duration-200"
                     >
                       {tag}
                     </span>

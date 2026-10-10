@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 const navLinks = [
   { label: "Beranda", href: "/" },
   { label: "Kategori", href: "/kategori" },
-  { label: "Timeline", href: "/timeline" },
+  { label: "Jadwal", href: "/timeline" },
   { label: "FAQ", href: "/faq" },
   { label: "Kontak", href: "/kontak" },
 ];
@@ -39,7 +39,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav Links */}
-        <div className="hidden md:flex items-center gap-[28px]">
+        <div className="hidden lg:flex items-center gap-[24px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -62,7 +62,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop CTA */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Link href="/daftar" className="gradient-pill-btn text-[13px] px-[24px] py-[12px]">
             Daftar
           </Link>
@@ -70,9 +70,10 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden flex flex-col gap-[5px] p-[8px] bg-transparent border-none cursor-pointer"
+          className="lg:hidden flex flex-col gap-[5px] p-[12px] -mr-[12px] bg-transparent border-none cursor-pointer"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle navigation menu"
+          aria-expanded={mobileOpen}
         >
           <span
             className={`block w-[20px] h-[2px] bg-platinum transition-transform duration-200 ${
@@ -94,18 +95,18 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 bg-liquid-abyss/98 backdrop-blur-lg ${
-          mobileOpen ? "max-h-[420px] border-t border-liquid-kelp" : "max-h-0"
+        className={`lg:hidden overflow-hidden transition-all duration-300 bg-liquid-abyss/98 backdrop-blur-lg ${
+          mobileOpen ? "max-h-[560px] border-t border-liquid-kelp" : "max-h-0"
         }`}
       >
-        <div className="page-container flex flex-col gap-[18px] py-[24px]">
+        <div className="page-container flex flex-col gap-[4px] py-[16px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`ghost-nav-link text-[15px] flex items-center justify-between ${
+                className={`ghost-nav-link text-[15px] py-[10px] flex items-center justify-between ${
                   isActive ? "active text-platinum font-medium" : "text-silver-mist"
                 }`}
                 onClick={() => setMobileOpen(false)}

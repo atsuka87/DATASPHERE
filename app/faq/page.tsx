@@ -4,79 +4,77 @@ import { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AnimateOnScroll from "@/components/AnimateOnScroll";
+import { CP_ADMIN, CP_LOMBA, PAYMENT } from "@/lib/event-data";
 
-const faqs = [
+// Disusun dari Rulebook DATASPHERE 2026 — fokus pertanyaan calon peserta
+const faqs: { question: string; answer: React.ReactNode }[] = [
   {
-    category: "umum",
-    question: "Apa itu DATASPHERE 2026?",
+    question: "Siapa yang boleh ikut lomba DATASPHERE 2026?",
     answer:
-      "DATASPHERE 2026 adalah kompetisi data science tingkat nasional yang ditujukan khusus bagi siswa SMA/SMK/MA sederajat. Acara ini diselenggarakan sebagai bagian dari Capstone Project mahasiswa S1 Sains Data Institut Informatika dan Bisnis (IIB) Darmajaya untuk menginspirasi generasi muda dalam mengeksplorasi potensi sains data.",
+      "Siswa aktif SMA/MA/SMK/sederajat yang mewakili sekolahnya. DataViz Challenge dan Data Quiz Battle terbuka untuk kelas X–XII, sedangkan Young Data Researcher untuk kelas XI–XII. Tidak ada batasan jumlah tim dari satu sekolah selama kuota masih tersedia.",
   },
   {
-    category: "umum",
-    question: "Siapa saja yang berhak menjadi peserta?",
+    question: "Berapa anggota per tim? Boleh ikut lebih dari satu cabang?",
     answer:
-      "Seluruh siswa aktif SMA/SMK/MA negeri maupun swasta di seluruh Indonesia yang dibuktikan dengan Kartu Tanda Pelajar atau Surat Keterangan Siswa Aktif dari sekolah yang bersangkutan.",
+      "DataViz Challenge dan Young Data Researcher: tim 1–3 orang dari sekolah yang sama — ketua tim mendaftar lalu menambahkan anggota lewat tombol “Tambah Anggota” di formulir. Data Quiz Battle: individu. Setiap peserta hanya boleh mengikuti 1 cabang dan tidak boleh merangkap anggota tim lain.",
   },
   {
-    category: "pendaftaran",
-    question: "Berapa biaya pendaftaran untuk mengikuti lomba?",
-    answer:
-      "Pendaftaran DATASPHERE 2026 adalah 100% GRATIS (Free of Charge). Seluruh peserta tidak dipungut biaya apapun selama masa kompetisi.",
+    question: "Berapa biaya pendaftaran dan bagaimana cara membayar?",
+    answer: (
+      <>
+        Early Bid (12–25 Oktober 2026) Rp75.000, Normal Bid (26 Oktober–12 November 2026) Rp100.000 —
+        per tim untuk DataViz &amp; YDR, per peserta untuk Data Quiz Battle. Transfer ke {PAYMENT.bank}{" "}
+        {PAYMENT.account} a.n. {PAYMENT.holder} paling lambat 3 hari setelah mendaftar, lalu kirim bukti ke
+        Administrasi ({CP_ADMIN.phone}). Pendaftaran yang belum dibayar setelah 3 hari dinyatakan batal.
+      </>
+    ),
   },
   {
-    category: "pendaftaran",
-    question: "Berapa jumlah anggota dalam satu tim?",
+    question: "Berkas apa saja yang harus dikumpulkan?",
     answer:
-      "Untuk kategori DataViz Challenge dan Young Data Researcher, tim dapat beranggotakan 1 hingga 3 siswa. Untuk Data Quiz Battle, tim terdiri dari 2 hingga 3 siswa. Anggota tim wajib berasal dari sekolah yang sama.",
+      "Paling lambat 12 November 2026 pukul 23.59 WIB: Kartu Pelajar setiap anggota, bukti pengisian formulir pendaftaran, bukti pembayaran, dan screenshot unggahan twibbon (akun publik). Setiap tim/peserta juga wajib mencantumkan contact person guru pendamping.",
   },
   {
-    category: "pendaftaran",
-    question: "Bolehkah satu sekolah mengirimkan lebih dari satu tim?",
+    question: "Apakah lomba online atau offline?",
     answer:
-      "Ya, setiap sekolah diperbolehkan mengirimkan lebih dari satu tim, baik pada kategori lomba yang sama maupun kategori lomba yang berbeda.",
+      "Penyisihan online (17–26 November 2026; Data Quiz Battle pada 17 November). Final offline pada 7 Desember 2026 di Kampus IIB Darmajaya, Jl. Z.A. Pagar Alam No. 93, Bandar Lampung. Peserta juga wajib mengikuti Seminar & Workshop (12 November, minimal 1 perwakilan per tim) serta simulasi lomba.",
   },
   {
-    category: "teknis",
-    question: "Apakah perlombaan dilaksanakan secara online atau offline?",
+    question: "Bolehkah memakai AI?",
     answer:
-      "Kompetisi diselenggarakan secara HYBRID. Babak penyisihan untuk seluruh kategori dilakukan secara ONLINE. Tim yang berhasil lolos sebagai finalis (Top Finalists) akan diundang untuk menghadiri babak Grand Final dan pameran Capstone Expo secara OFFLINE di Kampus IIB Darmajaya, Bandar Lampung.",
+      "DataViz & YDR: boleh sebagai alat bantu (brainstorming, rumus/syntax, tata bahasa) dengan melampirkan Pernyataan Penggunaan AI; dilarang menyerahkan analisis/kesimpulan yang sebagian besar dibuat AI atau membuat data/sitasi fiktif. Data Quiz Battle: dilarang memakai AI, mesin pencari, atau bantuan orang lain — sistem kuis dilengkapi anti-cheating.",
   },
   {
-    category: "teknis",
-    question: "Tools atau software apa saja yang boleh digunakan dalam DataViz Challenge?",
-    answer:
-      "Peserta bebas menggunakan berbagai platform visualisasi data modern seperti Looker Studio, Tableau Public, Microsoft Power BI, Microsoft Excel, Google Sheets, ataupun library pemrograman berbasis Python (Streamlit/Dash) / R (Shiny).",
+    question: "Bagaimana jika terlambat submit atau mengalami kendala teknis?",
+    answer: (
+      <>
+        Karya yang masuk setelah batas waktu tidak dinilai. Kendala koneksi/perangkat menjadi tanggung jawab
+        peserta, jadi siapkan cadangan dan kumpulkan paling lambat 3 jam sebelum batas. Jika ada kendala,
+        segera lapor ke CP Lomba ({CP_LOMBA.name}, {CP_LOMBA.phone}) dengan bukti screenshot. Karya boleh
+        diunggah ulang sebelum batas waktu — yang dinilai versi terakhir.
+      </>
+    ),
   },
   {
-    category: "teknis",
-    question: "Bagaimana jika peserta belum memiliki pengalaman coding / pemrograman?",
+    question: "Apakah biaya pendaftaran bisa dikembalikan?",
     answer:
-      "Sangat tidak masalah! Dua kategori lomba (DataViz Challenge dan Data Quiz Battle) dirancang ramah bagi pemula tanpa keharusan menguasai bahasa pemrograman seperti Python/R. Kamu dapat memanfaatkan spreadsheet (Excel/Google Sheets) dan visual drag-and-drop tools seperti Looker Studio.",
+      "Refund 100% hanya jika lomba/cabang dibatalkan panitia, kuota sudah penuh saat kamu membayar, terjadi pembayaran ganda/kelebihan transfer (dikembalikan selisihnya), atau pendaftaran ditolak karena kesalahan panitia. Tidak ada refund untuk pengunduran diri, gagal verifikasi berkas, atau diskualifikasi. Ajukan ke Administrasi paling lambat 7 hari setelah kejadian.",
   },
   {
-    category: "hadiah",
-    question: "Apakah seluruh peserta akan mendapatkan sertifikat?",
+    question: "Bagaimana jika tidak setuju dengan hasil penilaian?",
     answer:
-      "Ya, seluruh peserta yang mengumpulkan karya lengkap pada babak penyisihan akan mendapatkan E-Sertifikat Tingkat Nasional resmi dari Institut Informatika dan Bisnis (IIB) Darmajaya. Pemenang dan finalis akan mendapatkan Piagam Penghargaan Cetak dan Trophy.",
+      "Keputusan juri bersifat mutlak. Keberatan hanya untuk kesalahan teknis-administratif (mis. salah jumlah atau salah input nilai), diajukan ke CP Lomba maksimal 1×24 jam setelah pengumuman, disertai bukti. Panitia menjawab tertulis paling lambat 2×24 jam. Pengajuan tidak dikenai biaya.",
   },
   {
-    category: "hadiah",
-    question: "Apa saja benefit bagi pemenang selain uang tunai?",
+    question: "Apa hadiahnya?",
     answer:
-      "Selain uang tunai pembinaan dan piala rektor, para juara akan memperoleh Golden Ticket Beasiswa Kuliah di Program Studi S1 Sains Data IIB Darmajaya serta relasi mentoring langsung bersama dosen dan praktisi data profesional.",
+      "Juara 1, 2, dan 3 tiap cabang: uang tunai, piala, medali, merchandise, dan sertifikat. Harapan (dan Favorit 1 untuk DataViz): medali, merchandise, dan sertifikat. Pemenang wajib hadir di Awarding pada 10 Desember 2026 atau diwakilkan pendamping dengan surat keterangan.",
   },
 ];
 
 export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  const filteredFaqs =
-    activeCategory === "all"
-      ? faqs
-      : faqs.filter((f) => f.category === activeCategory);
+  const filteredFaqs = faqs;
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -91,36 +89,13 @@ export default function FAQPage() {
           <div className="page-container flex flex-col items-center text-center gap-[14px]">
             <span className="section-label hero-animate">PUSAT INFORMASI</span>
             <h1 className="hero-animate-d1 text-[clamp(2.5rem,5.5vw,4.5rem)] leading-none text-platinum">
-              Frequently Asked Questions
+              Pertanyaan Umum
             </h1>
             <p className="hero-animate-d2 text-silver-mist text-[16px] max-w-[620px] leading-[1.45]">
-              Temukan jawaban seputar syarat kepesertaan, teknis kompetisi,
-              dan pelaksanaan acara DATASPHERE 2026.
+              Jawaban singkat seputar syarat, biaya, berkas, dan aturan lomba
+              DATASPHERE 2026. Aturan lengkap ada di Rulebook resmi.
             </p>
 
-            {/* Category Filter Tabs */}
-            <div className="flex flex-wrap items-center justify-center gap-[8px] mt-[16px]">
-              {[
-                { id: "all", label: "Semua Pertanyaan" },
-                { id: "umum", label: "Umum & Syarat" },
-                { id: "pendaftaran", label: "Pendaftaran" },
-                { id: "teknis", label: "Teknis & Format" },
-                { id: "hadiah", label: "Hadiah & Sertifikat" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveCategory(tab.id);
-                    setOpenIndex(null);
-                  }}
-                  className={`filter-pill ${
-                    activeCategory === tab.id ? "active" : ""
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -131,11 +106,12 @@ export default function FAQPage() {
               const isOpen = openIndex === idx;
               return (
                 <div
-                  key={idx}
+                  key={faq.question}
                   className="surface-card p-0 transition-all duration-200 overflow-hidden"
                 >
                   <button
                     onClick={() => toggleAccordion(idx)}
+                    aria-expanded={isOpen}
                     className="w-full text-left p-[22px] md:p-[26px] flex items-center justify-between gap-[16px] cursor-pointer bg-transparent border-none text-platinum font-medium text-[17px] leading-[1.35] transition-colors hover:text-lavender-phosphor"
                   >
                     <span>{faq.question}</span>

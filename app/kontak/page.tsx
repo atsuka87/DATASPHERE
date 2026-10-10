@@ -3,47 +3,59 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AnimateOnScroll from "@/components/AnimateOnScroll";
+import Pending from "@/components/Pending";
+import { CONTACTS, CP_ADMIN, CP_LOMBA, EVENT, waLink } from "@/lib/event-data";
 
-const contactChannels = [
-  {
+const contactChannels: {
+  icon: string;
+  name: string;
+  value: React.ReactNode;
+  desc: string;
+  actionText?: string;
+  href?: string;
+  wide?: boolean;
+}[] = [
+  ...CONTACTS.map((c) => ({
     icon: "💬",
-    name: "WhatsApp Hotline",
-    value: "+62 821-8888-2026",
-    actionText: "Chat WhatsApp Resmi",
-    href: "https://wa.me/6282188882026?text=Halo%20Panitia%20DATASPHERE%202026,%20saya%20ingin%20bertanya",
-    desc: "Respon cepat setiap hari pukul 08.00 – 20.00 WIB",
-  },
+    name: `WhatsApp — ${c.role}`,
+    value: c.phone,
+    desc: `${c.name} — ${c.desc}`,
+    actionText: "Chat WhatsApp",
+    href: waLink(c.wa),
+  })),
   {
     icon: "✉️",
     name: "Email Resmi",
-    value: "datasphere@darmajaya.ac.id",
-    actionText: "Kirim Email",
-    href: "mailto:datasphere@darmajaya.ac.id?subject=Pertanyaan%20Kompetisi%20DATASPHERE%202026",
-    desc: "Untuk keperluan administrasi, persuratan, & kemitraan sekolah",
+    value: EVENT.email ?? <Pending />,
+    desc: "Untuk keperluan administrasi, persuratan, & kemitraan",
+    ...(EVENT.email ? { actionText: "Kirim Email", href: `mailto:${EVENT.email}` } : {}),
   },
   {
     icon: "📸",
     name: "Instagram",
-    value: "@datasphere.2026",
-    actionText: "Follow Instagram",
-    href: "https://instagram.com/",
-    desc: "Update info, live quiz, tips data science, & pengumuman juara",
+    value: EVENT.instagram ?? <Pending />,
+    desc: "Update info, pengumuman finalis, & pemenang",
+    ...(EVENT.instagram ? {
+      actionText: "Buka Instagram",
+      href: `https://www.instagram.com/${EVENT.instagram.replace(/^@/, "")}/`,
+    } : {}),
   },
   {
     icon: "📍",
-    name: "Sekretariat Panitia",
-    value: "Gedung Rektorat Lt. 2, IIB Darmajaya",
+    name: "Lokasi Kegiatan",
+    value: "Kampus IIB Darmajaya",
     actionText: "Buka Google Maps",
-    href: "https://maps.google.com/?q=IIB+Darmajaya+Lampung",
-    desc: "Jl. Z.A. Pagar Alam No.93, Gedong Meneng, Bandar Lampung",
+    href: "https://maps.google.com/?q=IIB+Darmajaya+Bandar+Lampung",
+    desc: "Institut Informatika dan Bisnis Darmajaya, Bandar Lampung",
+    wide: true,
   },
 ];
+
+const ADMIN_TOPICS = ["Pembayaran & Bukti Transfer", "Berkas Pendaftaran", "Refund", "Kendala Pendaftaran"];
 
 export default function KontakPage() {
   const [formData, setFormData] = useState({
     nama: "",
-    email: "",
     no_hp: "",
     asal_sekolah: "",
     subjek: "Pertanyaan Umum",
@@ -51,9 +63,25 @@ export default function KontakPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  // Pembayaran & berkas → Administrasi; lainnya → CP Lomba (Rulebook Bab 17)
+  const target = ADMIN_TOPICS.includes(formData.subjek) ? CP_ADMIN : CP_LOMBA;
 
+  // Tidak ada backend untuk pesan — form menyusun pesan lalu membukanya di WhatsApp panitia
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const text = [
+      `Halo Panitia DATASPHERE 2026,`,
+      ``,
+      `Nama: ${formData.nama}`,
+      formData.asal_sekolah ? `Asal: ${formData.asal_sekolah}` : null,
+      `No. WA: ${formData.no_hp}`,
+      `Topik: ${formData.subjek}`,
+      ``,
+      formData.pesan,
+    ]
+      .filter((l) => l !== null)
+      .join("\n");
+    window.open(waLink(target.wa, text), "_blank", "noopener,noreferrer");
     setSubmitted(true);
   };
 
@@ -69,8 +97,8 @@ export default function KontakPage() {
               Pusat Bantuan &amp; Kontak
             </h1>
             <p className="hero-animate-d2 text-silver-mist text-[16px] max-w-[620px] leading-[1.45]">
-              Ada hal yang ingin ditanyakan seputar pendaftaran, perlombaan,
-              atau kerjasama sekolah? Tim panitia DATASPHERE 2026 siap membantumu.
+              Ada pertanyaan seputar pendaftaran, perlombaan, atau kerja sama?
+              Hubungi panitia DATASPHERE 2026 melalui kontak resmi berikut.
             </p>
           </div>
         </section>
@@ -82,17 +110,17 @@ export default function KontakPage() {
               {contactChannels.map((c) => (
                 <div
                   key={c.name}
-                  className="surface-card flex flex-col justify-between gap-[20px] p-[28px] md:p-[32px]"
+                  className={`surface-card flex flex-col justify-between gap-[18px] p-[22px] md:p-[32px] ${c.wide ? "sm:col-span-2 sm:flex-row sm:items-center" : ""}`}
                 >
                   <div className="flex items-start gap-[16px]">
-                    <span className="text-[28px] p-[10px] rounded-[var(--radius-small)] bg-liquid-tide border border-accent-primary/40 flex-shrink-0">
+                    <span className="text-[22px] sm:text-[28px] p-[8px] sm:p-[10px] rounded-[var(--radius-small)] bg-liquid-tide border border-accent-primary/40 flex-shrink-0">
                       {c.icon}
                     </span>
                     <div className="flex flex-col gap-[4px]">
                       <span className="text-[12px] uppercase tracking-[0.14em] text-lavender-phosphor font-semibold">
                         {c.name}
                       </span>
-                      <h3 className="text-platinum text-[18px] font-medium leading-[1.3]">
+                      <h3 className="text-platinum text-[18px] font-medium leading-[1.3] break-all sm:break-normal">
                         {c.value}
                       </h3>
                       <p className="text-silver-mist text-[13px] leading-[1.4] mt-[2px]">
@@ -101,15 +129,17 @@ export default function KontakPage() {
                     </div>
                   </div>
 
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ghost-nav-link text-[13px] text-silver-mist hover:text-white flex items-center gap-[6px] font-medium self-start mt-auto"
-                  >
-                    <span>{c.actionText}</span>
-                    <span>→</span>
-                  </a>
+                  {c.href && (
+                    <a
+                      href={c.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ghost-nav-link text-[13px] text-silver-mist hover:text-white flex items-center justify-center sm:justify-start gap-[6px] font-medium self-stretch sm:self-start mt-auto flex-shrink-0 px-[16px] py-[12px] rounded-[var(--radius-small)] border border-accent-primary/40 hover:border-accent-secondary"
+                    >
+                      <span>{c.actionText}</span>
+                      <span>→</span>
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -125,17 +155,17 @@ export default function KontakPage() {
                   <div className="w-[56px] h-[56px] rounded-full bg-liquid-tide text-liquid-mist text-[26px] flex items-center justify-center border border-accent-secondary/50">
                     ✓
                   </div>
-                  <h2 className="text-platinum text-[24px]">Pesan Berhasil Terkirim!</h2>
+                  <h2 className="text-platinum text-[24px]">Pesan Siap Dikirim</h2>
                   <p className="text-silver-mist text-[15px] max-w-[460px]">
-                    Terima kasih telah menghubungi kami. Panitia DATASPHERE 2026 akan
-                    membalas pesanmu melalui email atau nomor WhatsApp yang telah dicantumkan.
+                    Pesanmu sudah dibuka di WhatsApp {target.role} ({target.name}, {target.phone}). Tekan
+                    tombol kirim di WhatsApp untuk mengirimkannya. Jika WhatsApp tidak
+                    terbuka, hubungi nomor tersebut secara langsung.
                   </p>
                   <button
                     onClick={() => {
                       setSubmitted(false);
                       setFormData({
                         nama: "",
-                        email: "",
                         no_hp: "",
                         asal_sekolah: "",
                         subjek: "Pertanyaan Umum",
@@ -153,14 +183,15 @@ export default function KontakPage() {
                     <span className="section-label">KIRIM PESAN LANGSUNG</span>
                     <h2 className="text-platinum text-[24px]">Tanya Panitia</h2>
                     <p className="text-silver-mist text-[14px]">
-                      Isi formulir di bawah ini dan kami akan membalas dalam waktu 1x24 jam.
+                      Isi formulir di bawah ini — pesanmu akan dibuka di WhatsApp panitia untuk dikirim.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-[16px]">
                     <div className="flex flex-col gap-[6px]">
-                      <label className="text-[13px] text-platinum font-medium">Nama Lengkap *</label>
+                      <label htmlFor="tanya-nama" className="text-[13px] text-platinum font-medium">Nama Lengkap *</label>
                       <input
+                        id="tanya-nama"
                         type="text"
                         required
                         value={formData.nama}
@@ -171,20 +202,9 @@ export default function KontakPage() {
                     </div>
 
                     <div className="flex flex-col gap-[6px]">
-                      <label className="text-[13px] text-platinum font-medium">Alamat Email *</label>
+                      <label htmlFor="tanya-wa" className="text-[13px] text-platinum font-medium">Nomor WhatsApp *</label>
                       <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="email@sekolah.sch.id / gmail"
-                        className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-[6px]">
-                      <label className="text-[13px] text-platinum font-medium">Nomor WhatsApp *</label>
-                      <input
+                        id="tanya-wa"
                         type="tel"
                         required
                         value={formData.no_hp}
@@ -195,8 +215,9 @@ export default function KontakPage() {
                     </div>
 
                     <div className="flex flex-col gap-[6px]">
-                      <label className="text-[13px] text-platinum font-medium">Asal Sekolah</label>
+                      <label htmlFor="tanya-sekolah" className="text-[13px] text-platinum font-medium">Asal Sekolah</label>
                       <input
+                        id="tanya-sekolah"
                         type="text"
                         value={formData.asal_sekolah}
                         onChange={(e) => setFormData({ ...formData, asal_sekolah: e.target.value })}
@@ -207,24 +228,30 @@ export default function KontakPage() {
                   </div>
 
                   <div className="flex flex-col gap-[6px]">
-                    <label className="text-[13px] text-platinum font-medium">Topik / Subjek</label>
+                    <label htmlFor="tanya-topik" className="text-[13px] text-platinum font-medium">Topik / Subjek</label>
                     <select
+                      id="tanya-topik"
                       value={formData.subjek}
                       onChange={(e) => setFormData({ ...formData, subjek: e.target.value })}
                       className="bg-liquid-tide border border-accent-primary/40 text-platinum rounded-[var(--radius-small)] px-[14px] py-[12px] text-[14px] focus:outline-none focus:border-accent-secondary transition-colors"
                     >
                       <option value="Pertanyaan Umum">Pertanyaan Umum</option>
+                      <option value="Pembayaran & Bukti Transfer">Pembayaran &amp; Bukti Transfer</option>
+                      <option value="Berkas Pendaftaran">Berkas Pendaftaran</option>
+                      <option value="Refund">Refund</option>
                       <option value="Kendala Pendaftaran">Kendala Pendaftaran</option>
                       <option value="Teknis Lomba DataViz">Teknis Lomba DataViz Challenge</option>
                       <option value="Teknis Lomba Quiz">Teknis Lomba Data Quiz Battle</option>
                       <option value="Teknis Lomba Research">Teknis Lomba Young Data Researcher</option>
-                      <option value="Undangan & Kemitraan Sekolah">Undangan & Kemitraan Sekolah</option>
+                      <option value="Seminar & Workshop">Seminar & Workshop</option>
+                      <option value="Keberatan Hasil Penilaian">Keberatan Hasil Penilaian</option>
                     </select>
                   </div>
 
                   <div className="flex flex-col gap-[6px]">
-                    <label className="text-[13px] text-platinum font-medium">Isi Pesan *</label>
+                    <label htmlFor="tanya-pesan" className="text-[13px] text-platinum font-medium">Isi Pesan *</label>
                     <textarea
+                      id="tanya-pesan"
                       required
                       rows={4}
                       value={formData.pesan}
@@ -236,9 +263,9 @@ export default function KontakPage() {
 
                   <button
                     type="submit"
-                    className="gradient-pill-btn text-[14px] px-[32px] py-[15px] self-start"
+                    className="gradient-pill-btn text-[14px] px-[32px] py-[15px] self-stretch sm:self-start"
                   >
-                    Kirim Pesan ke Panitia →
+                    Kirim via WhatsApp →
                   </button>
                 </form>
               )}

@@ -22,6 +22,12 @@ export default function AnimateOnScroll({
     const el = ref.current;
     if (!el) return;
 
+    // Pengguna yang memilih "kurangi gerakan": tampilkan langsung tanpa menunggu scroll
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.classList.add("aos-visible");
+      return;
+    }
+
     // If already in viewport on mount, reveal immediately with delay
     const rect = el.getBoundingClientRect();
     if (rect.top < window.innerHeight + 50 && rect.bottom > -50) {
@@ -40,7 +46,7 @@ export default function AnimateOnScroll({
           observer.unobserve(el);
         }
       },
-      { threshold: 0.05, rootMargin: "60px 0px -20px 0px" }
+      { threshold: 0.05, rootMargin: "200px 0px -20px 0px" }
     );
 
     observer.observe(el);

@@ -9,10 +9,10 @@ import * as THREE from "three";
  * and aurora accent cyan/phosphor with harmonic wave breathing and mouse parallax.
  */
 
-const OUTER_PARTICLES = 3000;
-const INNER_CORE_PARTICLES = 850;
-const STREAM_PARTICLES = 420;
 const SPHERE_RADIUS = 2.05;
+
+// Ukuran titik relatif terhadap tinggi canvas acuan desktop (620px)
+const pointScale = (height: number) => Math.min(1, Math.max(0.4, height / 620));
 
 export default function ParticleSphere() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +22,13 @@ export default function ParticleSphere() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    // Jumlah partikel lebih hemat di layar kecil (HP)
+    const isSmall = window.innerWidth < 768;
+    const OUTER_PARTICLES = isSmall ? 1600 : 3000;
+    const INNER_CORE_PARTICLES = isSmall ? 450 : 850;
+    const STREAM_PARTICLES = isSmall ? 260 : 420;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // ── 1. Scene & Camera Setup ──
     const scene = new THREE.Scene();
@@ -57,6 +64,8 @@ export default function ParticleSphere() {
       uniforms: {
         uTime: { value: 0 },
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uScale: { value: pointScale(h) },
+        uIntensity: { value: h < 400 ? 0.78 : 1.0 },
       },
       vertexShader: `
         attribute float size;
@@ -68,6 +77,7 @@ export default function ParticleSphere() {
         varying float vIsSparkle;
         uniform float uTime;
         uniform float uPixelRatio;
+        uniform float uScale;
 
         void main() {
           vIsSparkle = isSparkle;
@@ -120,7 +130,8 @@ export default function ParticleSphere() {
           vColor = finalColor;
 
           // Point sizing
-          gl_PointSize = size * uPixelRatio * (42.0 / -mvPosition.z);
+          // uScale: titik ikut mengecil di canvas kecil (HP) supaya tidak menumpuk jadi gumpalan putih
+          gl_PointSize = size * uPixelRatio * uScale * (42.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
 
           // Depth fade: front is sharp and radiant, back is subtle
@@ -129,6 +140,7 @@ export default function ParticleSphere() {
         }
       `,
       fragmentShader: `
+        uniform float uIntensity;
         varying vec3 vColor;
         varying float vAlpha;
         varying float vIsSparkle;
@@ -142,7 +154,7 @@ export default function ParticleSphere() {
           float halo = clamp(1.0 - dist * 2.0, 0.0, 1.0);
           
           float brightness = vIsSparkle > 0.5 ? 1.25 : 1.0;
-          float alpha = (core * 0.92 + halo * 0.38) * vAlpha * brightness;
+          float alpha = (core * 0.92 + halo * 0.38) * vAlpha * brightness * uIntensity;
 
           gl_FragColor = vec4(vColor, alpha);
         }
@@ -285,14 +297,14 @@ export default function ParticleSphere() {
 
         void main() {
           float rim = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.6);
-          vec3 teal = vec3(0.0, 0.58, 0.54);
-          vec3 cyan = vec3(0.0, 0.90, 0.86);
-          vec3 pink = vec3(1.0, 0.40, 0.88);
+          vec3 ocean = vec3(0.00, 0.47, 0.71);    // #0077B6
+          vec3 cyan = vec3(0.00, 0.71, 0.85);     // #00B4D8
+          vec3 phosphor = vec3(0.56, 0.88, 0.94); // #90E0EF
 
           float wave = sin(uTime * 0.8 + vPosition.y * 1.8) * 0.5 + 0.5;
-          vec3 col = mix(mix(teal, cyan, 0.6), pink, wave * 0.55);
+          vec3 col = mix(mix(ocean, cyan, 0.6), phosphor, wave * 0.55);
 
-          gl_FragColor = vec4(col, rim * 0.065);
+          gl_FragColor = vec4(col, rim * 0.08);
         }
       `,
       transparent: true,
@@ -317,14 +329,33 @@ export default function ParticleSphere() {
       mouseY = (e.clientY - centerY) / (window.innerHeight / 2);
     };
 
+    // Sentuhan di HP: geser jari memiringkan orb (tidak menghalangi scroll)
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      const rect = container.getBoundingClientRect();
+      mouseX = Math.max(-1, Math.min(1, (t.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)));
+      mouseY = Math.max(-1, Math.min(1, (t.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2)));
+    };
+    const onTouchEnd = () => {
+      mouseX = 0;
+      mouseY = 0;
+    };
+
     window.addEventListener("mousemove", onMouseMove, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: true });
+    container.addEventListener("touchend", onTouchEnd, { passive: true });
 
     // ── 8. Continuous Animation Loop ──
     const clock = new THREE.Clock();
 
+    let running = false;
+    let inView = true;
+    let elapsedOffset = 0;
+
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
+      const elapsed = elapsedOffset + clock.getElapsedTime();
 
       // Uniform updates
       particleMaterial.uniforms.uTime.value = elapsed;
@@ -351,7 +382,43 @@ export default function ParticleSphere() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    // Hanya render saat terlihat & tab aktif — hemat GPU/baterai
+    const start = () => {
+      if (running || reduceMotion || !inView || document.hidden) return;
+      running = true;
+      clock.start();
+      animate();
+    };
+    const stop = () => {
+      if (!running) return;
+      running = false;
+      elapsedOffset += clock.getElapsedTime();
+      clock.stop();
+      cancelAnimationFrame(frameRef.current);
+    };
+
+    if (reduceMotion) {
+      masterGroup.rotation.set(0.15, 0.4, 0);
+      renderer.render(scene, camera);
+    } else {
+      start();
+    }
+
+    const io = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) start();
+      else stop();
+    });
+    io.observe(container);
+    const onVisibility = () => (document.hidden ? stop() : start());
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // Fade-in halus setelah frame pertama
+    requestAnimationFrame(() => {
+      renderer.domElement.style.opacity = "1";
+    });
+    renderer.domElement.style.opacity = "0";
+    renderer.domElement.style.transition = "opacity 1.2s ease";
 
     // ── 9. Resize Handling ──
     const onResize = () => {
@@ -363,15 +430,24 @@ export default function ParticleSphere() {
       camera.updateProjectionMatrix();
       renderer.setSize(nw, nh);
       particleMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
+      particleMaterial.uniforms.uScale.value = pointScale(nh);
+      particleMaterial.uniforms.uIntensity.value = nh < 400 ? 0.78 : 1.0;
+      if (reduceMotion || !running) renderer.render(scene, camera);
     };
 
-    window.addEventListener("resize", onResize);
+    const ro = new ResizeObserver(onResize);
+    ro.observe(container);
 
     // ── 10. Cleanup ──
     return () => {
+      stop();
       cancelAnimationFrame(frameRef.current);
+      io.disconnect();
+      ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("resize", onResize);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
 
       outerGeom.dispose();
       innerGeom.dispose();
@@ -391,8 +467,8 @@ export default function ParticleSphere() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-full relative cursor-grab active:cursor-grabbing flex items-center justify-center"
-      aria-label="DATASPHERE 2026 3D Bioluminescent Data Orb"
+      className="w-full h-full relative flex items-center justify-center"
+      aria-hidden="true"
     />
   );
 }

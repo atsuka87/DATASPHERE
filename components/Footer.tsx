@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACTS, EVENT, RULEBOOK_PDF_URL, waLink } from "@/lib/event-data";
 
 const footerLinks = [
   {
@@ -6,17 +7,25 @@ const footerLinks = [
     links: [
       { label: "Beranda", href: "/" },
       { label: "Kategori Lomba", href: "/kategori" },
-      { label: "Timeline", href: "/timeline" },
+      { label: "Jadwal", href: "/timeline" },
       { label: "Pendaftaran", href: "/daftar" },
+      { label: "Rulebook (PDF)", href: RULEBOOK_PDF_URL, external: true },
       { label: "FAQ", href: "/faq" },
     ],
   },
   {
     heading: "Kontak",
     links: [
-      { label: "WhatsApp Panitia", href: "https://wa.me/62", external: true },
-      { label: "Email", href: "mailto:datasphere@darmajaya.ac.id", external: true },
-      { label: "Instagram", href: "https://instagram.com/", external: true },
+      ...CONTACTS.slice(0, 2).map((c) => ({
+        label: `${c.role} — ${c.name.split(" ")[0]} (WhatsApp)`,
+        href: waLink(c.wa),
+        external: true,
+      })),
+      ...(EVENT.instagram
+        ? [{ label: `Instagram ${EVENT.instagram}`, href: `https://www.instagram.com/${EVENT.instagram.replace(/^@/, "")}/`, external: true }]
+        : []),
+      ...(EVENT.email ? [{ label: EVENT.email, href: `mailto:${EVENT.email}`, external: true }] : []),
+      { label: "Semua Kontak Panitia", href: "/kontak" },
     ],
   },
 ];
@@ -24,7 +33,7 @@ const footerLinks = [
 export default function Footer() {
   return (
     <footer className="bg-liquid-deep mt-auto">
-      <div className="page-container py-[80px]">
+      <div className="page-container py-[56px] md:py-[80px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[48px]">
           {/* Brand Column */}
           <div className="flex flex-col gap-[16px]">
@@ -52,11 +61,11 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-silver-mist text-[14px] leading-[1.5] max-w-[280px]">
-              Darmajaya High School Data Science Challenge &amp; Capstone Expo
-              2026. Diselenggarakan oleh mahasiswa S1 Sains Data IIB Darmajaya.
+              Seminar &amp; kompetisi sains data — {EVENT.theme}.
+              Diselenggarakan oleh {EVENT.organizer}.
             </p>
             <p className="text-silver-mist text-[13px] mt-[8px]">
-              Jl. Jend. Ahmad Yani No.12, Bandar Lampung
+              Kampus IIB Darmajaya, {EVENT.campusAddress}
             </p>
           </div>
 
@@ -66,7 +75,7 @@ export default function Footer() {
               <span className="section-label text-liquid-mist">
                 {group.heading}
               </span>
-              <div className="flex flex-col gap-[12px]">
+              <div className="flex flex-col gap-[2px]">
                 {group.links.map((link) =>
                   "external" in link && link.external ? (
                     <a
@@ -74,7 +83,7 @@ export default function Footer() {
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ghost-nav-link text-[14px] normal-case tracking-normal w-fit"
+                      className="ghost-nav-link text-[14px] normal-case tracking-normal w-fit py-[7px]"
                     >
                       {link.label}
                     </a>
@@ -82,7 +91,7 @@ export default function Footer() {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className="ghost-nav-link text-[14px] normal-case tracking-normal w-fit"
+                      className="ghost-nav-link text-[14px] normal-case tracking-normal w-fit py-[7px]"
                     >
                       {link.label}
                     </Link>
@@ -99,7 +108,7 @@ export default function Footer() {
             © 2026 DATASPHERE — IIB Darmajaya. All rights reserved.
           </p>
           <p className="text-silver-mist text-[13px]">
-            Capstone Project — Program Studi S1 Sains Data
+            Prodi Sains Data — Institut Informatika dan Bisnis Darmajaya
           </p>
         </div>
       </div>

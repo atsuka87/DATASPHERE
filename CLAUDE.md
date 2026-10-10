@@ -110,3 +110,13 @@ Auros aslinya bertema fintech/trading. Untuk DATASPHERE:
 - Banyak field konten masih `[ISI]` (tanggal, hadiah, biaya) — pakai placeholder yang jelas ditandai, jangan mengarang data pasti.
 - Prioritaskan mobile-first responsive — target pengguna banyak akses dari HP.
 - Komponen dibuat reusable (Card, Button, SectionLabel, StatCounter) sesuai token di atas — jangan hardcode warna/spacing di luar token ini.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -95,6 +95,25 @@ html {
   scroll-behavior: smooth;
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Input min. 16px di HP supaya iPhone tidak auto-zoom saat field disentuh */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 body {
   min-height: 100vh;
   background-color: var(--color-liquid-abyss);
@@ -138,6 +157,9 @@ body {
   transition: --bg-glow-x 0.5s ease, --bg-glow-y 0.5s ease;
 }
 
+/* Base & komponen dibungkus @layer supaya utility Tailwind (p-[..], text-[..], dll.)
+   di halaman bisa menimpanya — termasuk ukuran khusus mobile. */
+@layer base {
 h1, h2, h3 {
   color: var(--color-platinum);
   font-family: var(--font-matter);
@@ -147,13 +169,14 @@ h1, h2, h3 {
 h1 {
   font-size: clamp(2.5rem, 5vw + 1rem, 6rem);
   line-height: var(--leading-display);
-  letter-spacing: var(--tracking-display);
+  /* em, bukan px: tracking ikut mengecil di layar HP */
+  letter-spacing: -0.04em;
 }
 
 h2 {
   font-size: clamp(1.75rem, 3vw + 0.5rem, 3.8rem);
-  line-height: var(--leading-heading);
-  letter-spacing: var(--tracking-heading-lg);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
 }
 
 h3 {
@@ -161,6 +184,9 @@ h3 {
   line-height: var(--leading-heading);
 }
 
+}
+
+@layer components {
 /* ──────────────────────────────────────────────
    Component Utilities
    ────────────────────────────────────────────── */
@@ -246,10 +272,12 @@ h3 {
               box-shadow 0.35s ease;
 }
 
+@media (hover: hover) {
 .surface-card:hover {
   transform: translateY(-6px);
   border-color: rgba(0, 180, 216, 0.5);
   box-shadow: 0 24px 70px rgba(3, 4, 94, 0.65), 0 0 28px rgba(0, 180, 216, 0.15);
+}
 }
 
 /* Recessed Card */
@@ -392,6 +420,8 @@ h3 {
   color: var(--color-lavender-phosphor);
   font-size: 13px;
   letter-spacing: 0.02em;
+}
+
 }
 
 /* ──────────────────────────────────────────────
@@ -607,3 +637,271 @@ h3 {
   animation: bioluminescent-breathe 8s ease-in-out infinite;
 }
 
+
+/* ──────────────────────────────────────────────
+   Data Animations — dashboard panel, glyph kategori, bar rubrik
+   ────────────────────────────────────────────── */
+
+.text-gradient-aurora {
+  background: var(--gradient-aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Grid halus ala data terminal */
+.data-grid-bg {
+  background-image:
+    linear-gradient(rgba(72, 202, 228, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(72, 202, 228, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse at 70% 30%, #000 30%, transparent 85%);
+}
+
+/* Bar tumbuh dari kiri saat terlihat */
+.data-bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.aos-visible .data-bar {
+  animation: data-bar-grow 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes data-bar-grow {
+  to { transform: scaleX(1); }
+}
+
+/* Segmen donut berputar masuk */
+.data-donut-seg {
+  opacity: 0;
+}
+.aos-visible .data-donut-seg {
+  animation: data-fade-in 0.8s ease forwards;
+}
+
+/* Garis milestone tergambar */
+.data-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.aos-visible .data-line {
+  animation: data-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}
+.data-area,
+.data-point,
+.data-runner {
+  opacity: 0;
+}
+.aos-visible .data-area {
+  animation: data-fade-in 1.2s ease 1.2s forwards;
+}
+.aos-visible .data-point {
+  animation: data-fade-in 0.5s ease forwards;
+}
+.aos-visible .data-runner {
+  animation: data-fade-in 0.6s ease 2.1s forwards;
+  filter: drop-shadow(0 0 6px #48cae4);
+}
+
+@keyframes data-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes data-fade-in {
+  to { opacity: 1; }
+}
+
+/* Glyph DataViz: bar bernapas naik-turun */
+.glyph-bar {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: glyph-bar 2.8s ease-in-out infinite;
+}
+@keyframes glyph-bar {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.72); }
+}
+.glyph-trend {
+  animation: glyph-dash 1.6s linear infinite;
+}
+@keyframes glyph-dash {
+  to { stroke-dashoffset: -12; }
+}
+
+/* Glyph Quiz: timer berjalan & jawaban benar berkedip */
+.glyph-timer {
+  animation: glyph-timer 6s linear infinite;
+}
+@keyframes glyph-timer {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: var(--c); }
+}
+.glyph-answer {
+  animation: glyph-answer 6s ease-in-out infinite;
+}
+@keyframes glyph-answer {
+  0%, 55% { opacity: 0.35; }
+  65%, 100% { opacity: 1; }
+}
+
+/* Glyph Research: titik muncul, garis tren, lensa memindai */
+.glyph-dot {
+  animation: glyph-dot 4s ease-in-out infinite;
+}
+@keyframes glyph-dot {
+  0%, 100% { opacity: 0.45; }
+  40% { opacity: 1; }
+}
+.glyph-fit {
+  stroke-dasharray: 1;
+  animation: glyph-fit 4s ease-in-out infinite;
+}
+@keyframes glyph-fit {
+  0% { stroke-dashoffset: 1; }
+  45%, 85% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+.glyph-lens {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: glyph-lens 4s ease-in-out infinite;
+}
+@keyframes glyph-lens {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-60px, 30px); }
+}
+
+/* Bar bobot rubrik di tabel kategori */
+.rubric-bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.aos-visible .rubric-bar {
+  animation: data-bar-grow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hormati preferensi kurangi gerakan */
+@media (prefers-reduced-motion: reduce) {
+  /* Konten yang muncul saat scroll langsung terlihat, tanpa geser/fade */
+  .aos-element {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .data-bar,
+  .rubric-bar,
+  .data-line {
+    transform: none;
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+  .data-donut-seg,
+  .data-area,
+  .data-point,
+  .data-runner {
+    opacity: 1;
+    animation: none !important;
+  }
+  .glyph-bar,
+  .glyph-trend,
+  .glyph-timer,
+  .glyph-answer,
+  .glyph-dot,
+  .glyph-fit,
+  .glyph-lens,
+  .animate-bioluminescent-breathe,
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
+/* Intro bumper sudah pernah dilihat (di-set oleh script sebelum hydration) */
+.intro-seen #datasphere-intro-bumper {
+  display: none;
+}
+
+/* Baris scroll horizontal tanpa scrollbar (tab filter di HP) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ──────────────────────────────────────────────
+   Admin panel — lebih padat dari halaman publik, tanpa efek hover "melayang"
+   Hierarki: sidebar deep → halaman abyss → card kelp → konten bersarang tide
+   ────────────────────────────────────────────── */
+@layer components {
+.admin-card {
+  background-color: var(--color-liquid-kelp);
+  border: 1px solid rgba(0, 119, 182, 0.3);
+  border-radius: var(--radius-cards);
+}
+
+.admin-inset {
+  background-color: var(--color-liquid-tide);
+  border: 1px solid rgba(0, 119, 182, 0.25);
+  border-radius: var(--radius-small);
+}
+
+.admin-field {
+  background-color: var(--color-liquid-tide);
+  border: 1px solid rgba(0, 119, 182, 0.45);
+  color: var(--color-platinum);
+  border-radius: var(--radius-small);
+  padding: 9px 12px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+.admin-field::placeholder {
+  color: rgba(173, 232, 244, 0.6);
+}
+.admin-field:focus {
+  outline: none;
+  border-color: var(--color-accent-secondary);
+}
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--radius-small);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid rgba(0, 119, 182, 0.5);
+  color: var(--color-liquid-mist);
+  background: transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.admin-btn:hover:not(:disabled) {
+  border-color: var(--color-accent-secondary);
+  color: var(--color-platinum);
+}
+.admin-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.admin-btn-primary {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: #ffffff;
+}
+.admin-btn-primary:hover:not(:disabled) {
+  background-color: #0088cc;
+}
+
+.admin-row > summary {
+  list-style: none;
+}
+.admin-row > summary::-webkit-details-marker {
+  display: none;
+}
+}
+@media (max-width: 639px) {
+  .admin-field {
+    font-size: 16px; /* cegah auto-zoom iOS */
+  }
+}
