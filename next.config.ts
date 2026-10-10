@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
       { source: "/:path*", headers: securityHeaders },
       // Admin panel tidak boleh muncul di mesin pencari
       { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      // Kamera HANYA diizinkan di halaman scanner QR check-in (aturan terakhir menimpa aturan umum di atas)
+      {
+        source: "/admin/check-in",
+        headers: [{ key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=(), usb=()" }],
+      },
     ];
   },
 };

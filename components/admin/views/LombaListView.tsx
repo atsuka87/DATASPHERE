@@ -1,20 +1,17 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/admin/AdminShell";
 import FilterBar, { ExportButton } from "@/components/admin/FilterBar";
-import { DeleteButton, NoteEditor, ProofStatusButtons, StatusBadge, StatusSelect } from "@/components/admin/RowControls";
+import { DeleteButton, NoteEditor, PayBadge, ProofStatusButtons, StatusBadge, StatusSelect } from "@/components/admin/RowControls";
 import type { AppRole } from "@/lib/auth-core";
-import {
-  GELOMBANG_LABEL,
-  GELOMBANG_VALUES,
-  KATEGORI_IDS,
-  KATEGORI_LABEL,
-  LOMBA_STATUSES,
-  STATUS_LABEL,
-} from "@/lib/admin/constants";
+import { GELOMBANG_LABEL, GELOMBANG_VALUES, KATEGORI_IDS, KATEGORI_LABEL, LOMBA_STATUSES } from "@/lib/admin/constants";
 import type { LombaFilters, LombaRow } from "@/lib/admin/data";
 import { fmtDateTime, toQuery, toWa } from "@/lib/admin/format";
+import { LOMBA_TABS, PAY_DEADLINE_MS, TAB_LABEL, expectedFee, inTab, payState, tabCounts } from "@/lib/admin/payment";
 import { formatBytes } from "@/lib/proof-upload";
+import RegistrationQr from "@/components/RegistrationQr";
 
-const COLS = "lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1.3fr)_100px_70px_150px_160px_20px]";
+const BASE = "/admin/pendaftaran-lomba";
+const COLS = "lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_150px_20px]";
 
 function Phone({ value }: { value: string | null | undefined }) {
   const wa = toWa(value);
@@ -32,7 +29,7 @@ function Block({ title, children, aside }: { title: string; children: React.Reac
   return (
     <section className="flex flex-col gap-[10px]">
       <div className="flex items-baseline justify-between gap-[8px]">
-        <h3 className="text-[11px] uppercase tracking-[0.12em] text-lavender-phosphor font-medium">{title}</h3>
+        <h3 className="text-[13px] text-platinum font-medium">{title}</h3>
         {aside}
       </div>
       {children}
@@ -40,30 +37,112 @@ function Block({ title, children, aside }: { title: string; children: React.Reac
   );
 }
 
-export default function LombaListView({ rows, filters, role }: { rows: LombaRow[]; filters: LombaFilters; role: AppRole }) {
+const box = "rounded-[var(--radius-small)] border border-accent-primary/25 bg-liquid-deep/40";
+
+// Tab cepat dengan jumlah — mempertahankan pencarian & filter lain
+function Tabs({ filters, counts }: { filters: LombaFilters; counts: Record<string, number> }) {
+  const active = filters.tab ?? "semua";
   return (
-    <div className="flex flex-col gap-[20px]">
+    <nav aria-label="Saring cepat" className="-mx-[16px] sm:mx-0 px-[16px] sm:px-0 overflow-x-auto">
+      <div className="flex gap-[6px] w-max">
+        {LOMBA_TABS.map((t) => {
+          const href = `${BASE}${toQuery({ ...filters, tab: t === "semua" ? undefined : t })}`;
+          const on = t === active;
+          return (
+            <Link
+              key={t}
+              href={href}
+              aria-current={on ? "page" : undefined}
+              className={`flex items-center gap-[8px] rounded-full border px-[14px] py-[8px] text-[13px] whitespace-nowrap transition-colors ${
+                on
+                  ? "bg-accent-primary border-accent-primary text-platinum"
+                  : "border-silver-mist/20 text-silver-mist hover:text-platinum hover:border-accent-secondary"
+              }`}
+            >
+              {TAB_LABEL[t]}
+              <span className={`tabular-nums text-[12px] ${on ? "text-liquid-mist" : "text-silver-mist/70"}`}>{counts[t]}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+function PaymentBlock({ r }: { r: LombaRow }) {
+  const fee = expectedFee(r.gelombang);
+  const deadline = new Date(new Date(r.created_at).getTime() + PAY_DEADLINE_MS).toISOString();
+  return (
+    <Block title="Pembayaran">
+      <div className={`${box} px-[12px] py-[10px] grid grid-cols-2 gap-[10px] text-[13px]`}>
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-[12px] text-silver-mist">Harus bayar</span>
+          <span className="text-platinum">{fee ? `${fee.fee} · ${fee.label}` : "—"}</span>
+        </div>
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-[12px] text-silver-mist">Batas bayar</span>
+          <span className={r.overdue ? "text-red-300" : "text-platinum"}>
+            {fmtDateTime(deadline)}
+            {r.overdue ? " · lewat" : ""}
+          </span>
+        </div>
+      </div>
+      {r.payment_proofs.length === 0 && (
+        <p className="text-[13px] text-silver-mist rounded-[var(--radius-small)] border border-dashed border-accent-primary/35 px-[12px] py-[10px]">
+          Belum upload bukti. Cek juga kiriman di WhatsApp Administrasi.
+        </p>
+      )}
+      {r.payment_proofs.map((p, i) => (
+        <div key={p.id} className={`${box} px-[12px] py-[12px] flex flex-col gap-[10px] ${i > 0 ? "opacity-70" : ""}`}>
+          <div className="flex flex-wrap items-center justify-between gap-[8px] text-[12px]">
+            <span className="text-silver-mist">
+              {i === 0 ? "Bukti terbaru" : "Bukti lama"} · {fmtDateTime(p.created_at)}
+              {p.size_bytes ? ` · ${formatBytes(p.size_bytes)}` : ""}
+            </span>
+            {p.url ? (
+              <a href={p.url} target="_blank" rel="noopener noreferrer" className="admin-btn px-[12px] py-[6px] text-[12px]">
+                Lihat bukti ↗
+              </a>
+            ) : (
+              <span className="text-red-300">File tidak tersedia</span>
+            )}
+          </div>
+          <ProofStatusButtons id={p.id} status={p.status} actions={i === 0} />
+          {p.updated_by_email && <span className="text-[11px] text-silver-mist">Diperiksa oleh {p.updated_by_email}</span>}
+        </div>
+      ))}
+    </Block>
+  );
+}
+
+export default function LombaListView({ rows: all, filters, role }: { rows: LombaRow[]; filters: LombaFilters; role: AppRole }) {
+  const counts = tabCounts(all);
+  const rows = all.filter((r) => inTab(r, filters.tab ?? "semua"));
+
+  return (
+    <div className="flex flex-col gap-[18px]">
       <PageHeader
         eyebrow="Data peserta"
         title="Pendaftaran Lomba"
         description={
           <>
-            <span className="text-platinum tabular-nums">{rows.length}</span> tim/peserta
-            {rows.length >= 2000 ? " (dibatasi 2000 — persempit filter)" : ""} · klik baris untuk detail, bukti transfer, dan
-            ubah status.
+            Menampilkan <span className="text-platinum tabular-nums">{rows.length}</span> tim/peserta
+            {all.length >= 2000 ? " (dibatasi 2000 — persempit pencarian)" : ""}. Klik baris untuk melihat detail.
           </>
         }
       >
         <ExportButton href={`/admin/export/lomba${toQuery(filters)}`} />
       </PageHeader>
 
+      <Tabs filters={filters} counts={counts} />
+
       <FilterBar
-        basePath="/admin/pendaftaran-lomba"
+        basePath={BASE}
         q={filters.q}
-        searchPlaceholder="Nama tim, sekolah, atau guru pendamping"
+        searchPlaceholder="Nama tim, sekolah, atau guru"
+        hidden={{ tab: filters.tab, status: filters.status }}
         selects={[
-          { name: "kategori", label: "Kategori", value: filters.kategori, options: KATEGORI_IDS.map((k) => ({ value: k, label: KATEGORI_LABEL[k] })) },
-          { name: "status", label: "Status", value: filters.status, options: LOMBA_STATUSES.map((s) => ({ value: s, label: STATUS_LABEL[s] })) },
+          { name: "kategori", label: "Lomba", value: filters.kategori, options: KATEGORI_IDS.map((k) => ({ value: k, label: KATEGORI_LABEL[k] })) },
           {
             name: "gelombang",
             label: "Gelombang",
@@ -74,21 +153,21 @@ export default function LombaListView({ rows, filters, role }: { rows: LombaRow[
       />
 
       {rows.length === 0 ? (
-        <div className="admin-card p-[32px] text-center text-silver-mist text-[14px]">Tidak ada data yang cocok dengan filter.</div>
+        <div className="admin-card p-[32px] text-center text-silver-mist text-[14px]">
+          {filters.tab === "perlu-dicek" ? "Tidak ada bukti transfer yang perlu dicek." : "Tidak ada data yang cocok."}
+        </div>
       ) : (
         <div className="admin-card overflow-hidden">
-          <div className={`hidden lg:grid ${COLS} gap-[16px] px-[20px] py-[11px] bg-liquid-tide border-b border-accent-primary/25 text-[11px] uppercase tracking-[0.1em] text-silver-mist`}>
+          <div className={`hidden lg:grid ${COLS} gap-[16px] px-[20px] py-[11px] bg-liquid-tide border-b border-accent-primary/25 text-[12px] text-silver-mist`}>
             <span>Tim / Sekolah</span>
-            <span>Kategori</span>
-            <span>Gelombang</span>
-            <span>Tim</span>
-            <span>Bukti transfer</span>
+            <span>Lomba</span>
+            <span>Pembayaran</span>
             <span>Status</span>
             <span />
           </div>
 
           {rows.map((r) => {
-            const latestProof = r.payment_proofs[0];
+            const pay = payState(r.payment_proofs);
             return (
               <details key={r.id} className="admin-row group border-t border-accent-primary/20 first-of-type:border-t-0">
                 <summary
@@ -101,20 +180,17 @@ export default function LombaListView({ rows, filters, role }: { rows: LombaRow[
                     </div>
                   </div>
                   <span className="lg:hidden justify-self-end">
-                    <StatusBadge status={r.status} />
+                    <PayBadge state={pay} overdue={r.overdue} />
                   </span>
-                  <span className="col-span-2 lg:col-span-1 text-[13px] text-liquid-mist leading-[1.45]">
+                  <span className="col-span-2 lg:col-span-1 text-[13px] text-liquid-mist">
                     {KATEGORI_LABEL[r.kategori_lomba] ?? r.kategori_lomba}
-                    <span className="lg:hidden text-silver-mist">
+                    <span className="lg:hidden">
                       {" · "}
-                      {r.gelombang ? GELOMBANG_LABEL[r.gelombang] ?? r.gelombang : "—"} · {r.jumlah_anggota} org · bukti{" "}
-                      {latestProof ? STATUS_LABEL[latestProof.status]?.toLowerCase() : "belum ada"}
+                      <StatusBadge status={r.status} />
                     </span>
                   </span>
-                  <span className="hidden lg:block text-silver-mist text-[13px]">{r.gelombang ? GELOMBANG_LABEL[r.gelombang] ?? r.gelombang : "—"}</span>
-                  <span className="hidden lg:block text-silver-mist text-[13px] tabular-nums">{r.jumlah_anggota} org</span>
                   <span className="hidden lg:block">
-                    {latestProof ? <StatusBadge status={latestProof.status} /> : <span className="text-[12px] text-silver-mist/80">Belum ada</span>}
+                    <PayBadge state={pay} overdue={r.overdue} />
                   </span>
                   <span className="hidden lg:block">
                     <StatusBadge status={r.status} />
@@ -124,87 +200,60 @@ export default function LombaListView({ rows, filters, role }: { rows: LombaRow[
                   </span>
                 </summary>
 
-                <div className="bg-liquid-tide border-t border-accent-primary/20 px-[16px] sm:px-[20px] py-[20px] grid grid-cols-1 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-[24px]">
+                <div className="bg-liquid-tide border-t border-accent-primary/20 px-[16px] sm:px-[20px] py-[20px] grid grid-cols-1 xl:grid-cols-2 gap-[24px]">
+                  {/* Kiri: yang paling sering dikerjakan — cek pembayaran lalu status */}
                   <div className="flex flex-col gap-[20px] min-w-0">
-                    <Block title={`Anggota (${r.jumlah_anggota})`}>
-                      <ul className="rounded-[var(--radius-small)] border border-accent-primary/25 bg-liquid-deep/40 divide-y divide-accent-primary/15">
-                        {r.anggota.map((m, i) => (
-                          <li key={i} className="px-[12px] py-[9px] grid grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[72px_minmax(0,1fr)_70px_auto] gap-x-[12px] gap-y-[2px] text-[13px] items-center">
-                            <span className="text-silver-mist text-[12px]">{i === 0 ? "Ketua" : `Anggota ${i + 1}`}</span>
-                            <span className="text-platinum truncate">{m.nama}</span>
-                            <span className="text-silver-mist col-start-2 sm:col-start-auto">{m.kelas ? `Kelas ${m.kelas}` : ""}</span>
-                            <span className="col-start-2 sm:col-start-auto">
-                              <Phone value={m.kontak} />
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Block>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px]">
-                      <Block title="Guru pendamping">
-                        <div className="rounded-[var(--radius-small)] border border-accent-primary/25 bg-liquid-deep/40 px-[12px] py-[10px] text-[13px] flex flex-col gap-[2px]">
-                          <span className="text-platinum">{r.pendamping_nama ?? "—"}</span>
-                          <Phone value={r.pendamping_kontak} />
-                        </div>
-                      </Block>
-                      <Block title="Kontak tim">
-                        <div className="rounded-[var(--radius-small)] border border-accent-primary/25 bg-liquid-deep/40 px-[12px] py-[10px] text-[13px] flex flex-col gap-[2px] min-w-0">
-                          <Phone value={r.kontak_whatsapp} />
-                          <span className="text-liquid-mist break-all">{r.email ?? "Email tidak diisi"}</span>
-                        </div>
-                      </Block>
-                    </div>
-
-                    <Block title="Catatan panitia">
-                      <NoteEditor table="lomba" id={r.id} value={r.catatan} />
-                    </Block>
-                  </div>
-
-                  <div className="flex flex-col gap-[20px] min-w-0">
+                    <PaymentBlock r={r} />
                     <Block
                       title="Status pendaftaran"
                       aside={
                         <span className="text-[11px] text-silver-mist text-right">
-                          {r.updated_at ? `${fmtDateTime(r.updated_at)} · ${r.updated_by_email ?? "sistem"}` : "Belum pernah diubah"}
+                          {r.updated_at ? `Diubah ${fmtDateTime(r.updated_at)} · ${r.updated_by_email ?? "sistem"}` : "Belum pernah diubah"}
                         </span>
                       }
                     >
                       <StatusSelect table="lomba" id={r.id} value={r.status} options={LOMBA_STATUSES} />
                     </Block>
+                  </div>
 
-                    <Block title={`Bukti transfer (${r.payment_proofs.length})`}>
-                      {r.payment_proofs.length === 0 && (
-                        <p className="text-[13px] text-silver-mist rounded-[var(--radius-small)] border border-dashed border-accent-primary/35 px-[12px] py-[10px]">
-                          Belum mengunggah. Cek kiriman di WhatsApp Administrasi.
-                        </p>
-                      )}
-                      {r.payment_proofs.map((p) => (
-                        <div
-                          key={p.id}
-                          className="rounded-[var(--radius-small)] border border-accent-primary/25 bg-liquid-deep/40 px-[12px] py-[10px] flex flex-col gap-[10px]"
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-[8px] text-[12px]">
-                            <span className="text-silver-mist">
-                              {fmtDateTime(p.created_at)}
-                              {p.size_bytes ? ` · ${formatBytes(p.size_bytes)}` : ""}
-                            </span>
-                            {p.url ? (
-                              <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-accent-secondary hover:text-platinum">
-                                Buka file ↗
-                              </a>
-                            ) : (
-                              <span className="text-red-300">File tidak tersedia</span>
-                            )}
-                          </div>
-                          <ProofStatusButtons id={p.id} status={p.status} />
-                          {p.updated_by_email && <span className="text-[11px] text-silver-mist">Diperiksa oleh {p.updated_by_email}</span>}
-                        </div>
-                      ))}
+                  {/* Kanan: data peserta */}
+                  <div className="flex flex-col gap-[20px] min-w-0">
+                    <Block title={`Anggota (${r.jumlah_anggota})`} aside={<span className="text-[12px] text-silver-mist">{r.gelombang ? GELOMBANG_LABEL[r.gelombang] ?? r.gelombang : ""}</span>}>
+                      <ul className={`${box} divide-y divide-accent-primary/15`}>
+                        {r.anggota.map((m, i) => (
+                          <li key={i} className="px-[12px] py-[9px] flex flex-wrap items-center gap-x-[12px] gap-y-[2px] text-[13px]">
+                            <span className="text-silver-mist text-[12px] w-[64px]">{i === 0 ? "Ketua" : `Anggota ${i + 1}`}</span>
+                            <span className="text-platinum flex-1 min-w-[120px] truncate">{m.nama}</span>
+                            <span className="text-silver-mist">{m.kelas ? `Kelas ${m.kelas}` : ""}</span>
+                            <Phone value={m.kontak} />
+                          </li>
+                        ))}
+                      </ul>
                     </Block>
 
-                    <div className="mt-auto flex flex-col gap-[10px] pt-[4px] border-t border-accent-primary/15">
-                      <span className="pt-[10px] text-[11px] text-silver-mist/80 font-mono break-all">ID {r.id}</span>
+                    <Block title="Guru pendamping">
+                      <div className={`${box} px-[12px] py-[10px] text-[13px] flex flex-wrap justify-between gap-[8px]`}>
+                        <span className="text-platinum">{r.pendamping_nama ?? "—"}</span>
+                        <Phone value={r.pendamping_kontak} />
+                      </div>
+                    </Block>
+
+                    <Block title="Catatan panitia">
+                      <NoteEditor table="lomba" id={r.id} value={r.catatan} />
+                    </Block>
+
+                    <Block title="QR registrasi">
+                      <div className="flex items-center gap-[16px]">
+                        <RegistrationQr kind="lomba" id={r.id} name={r.nama_tim} size={112} />
+                        <p className="text-[12px] text-silver-mist">
+                          Simpan lalu kirim ke peserta lewat WA bila QR mereka hilang. Dipindai di menu Check-in.
+                          {r.hadir_at ? <span className="block mt-[6px] text-lavender-phosphor">✓ Check-in {fmtDateTime(r.hadir_at)}</span> : null}
+                        </p>
+                      </div>
+                    </Block>
+
+                    <div className="flex flex-wrap items-center justify-between gap-[10px] pt-[10px] border-t border-accent-primary/15">
+                      <span className="text-[11px] text-silver-mist/80 font-mono">No. registrasi {r.id.slice(0, 8).toUpperCase()}</span>
                       {role === "admin" && <DeleteButton table="lomba" id={r.id} label={r.nama_tim} />}
                     </div>
                   </div>

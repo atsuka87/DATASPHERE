@@ -3,8 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { GELOMBANG_LABEL, KATEGORI_LABEL, STATUS_LABEL } from "@/lib/admin/constants";
 import { fetchLomba, fetchSeminar, parseLombaFilters, parseSeminarFilters } from "@/lib/admin/data";
 import { fmtDateTime } from "@/lib/admin/format";
+import { PAY_LABEL, inTab, payState } from "@/lib/admin/payment";
 
-// Export CSV dengan filter yang sama seperti halaman list (?q=&kategori=&status=&gelombang=).
+// Export CSV dengan filter yang sama seperti halaman list (?q=&kategori=&status=&gelombang=&tab=).
 // Route Handler tidak melewati layout admin, jadi role dicek sendiri di sini (selain proxy.ts).
 
 type Cell = string | number | null | undefined;
@@ -33,20 +34,20 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/admin/export
   let csv: string;
 
   if (type === "lomba") {
-    const rows = await fetchLomba(parseLombaFilters(sp));
+    const filters = parseLombaFilters(sp);
+    const rows = (await fetchLomba(filters)).filter((r) => inTab(r, filters.tab ?? "semua"));
     const header = [
       "ID", "Tanggal Daftar", "Nama Tim", "Sekolah", "Kategori", "Gelombang", "Jumlah Anggota",
       "Ketua", "Kelas Ketua", "Kontak Ketua",
       "Anggota 2", "Kelas Anggota 2", "Kontak Anggota 2",
       "Anggota 3", "Kelas Anggota 3", "Kontak Anggota 3",
       "Guru Pendamping", "Kontak Pendamping", "Email",
-      "Status", "Bukti Transfer", "Catatan", "Diubah Pada", "Diubah Oleh",
+      "Status", "Pembayaran", "Lewat Batas Bayar", "Catatan", "Diubah Pada", "Diubah Oleh",
     ];
     csv = toCsv(
       header,
       rows.map((r) => {
         const m = [0, 1, 2].flatMap((i) => [r.anggota[i]?.nama, r.anggota[i]?.kelas, r.anggota[i]?.kontak]);
-        const proof = r.payment_proofs[0];
         return [
           r.id, fmtDateTime(r.created_at), r.nama_tim, r.nama_sekolah,
           KATEGORI_LABEL[r.kategori_lomba] ?? r.kategori_lomba,
@@ -54,7 +55,8 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/admin/export
           ...m,
           r.pendamping_nama, r.pendamping_kontak, r.email,
           STATUS_LABEL[r.status] ?? r.status,
-          proof ? `${STATUS_LABEL[proof.status] ?? proof.status} (${r.payment_proofs.length} file)` : "Belum ada",
+          `${PAY_LABEL[payState(r.payment_proofs)]}${r.payment_proofs.length ? ` (${r.payment_proofs.length} file)` : ""}`,
+          r.overdue ? "Ya" : "",
           r.catatan, r.updated_at ? fmtDateTime(r.updated_at) : "", r.updated_by_email,
         ];
       }),

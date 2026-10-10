@@ -71,12 +71,27 @@ export async function updateProofStatus(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return fail("Data tidak valid.");
 
   const supabase = await createSupabaseServerClient();
-  const { error, count } = await supabase
+  const { data, error } = await supabase
     .from("payment_proofs")
-    .update({ status: parsed.data.status }, { count: "exact" })
-    .eq("id", parsed.data.id);
+    .update({ status: parsed.data.status })
+    .eq("id", parsed.data.id)
+    .select("registration_id");
   if (error) return fail("Gagal menyimpan status bukti.");
-  if (!count) return fail("Bukti tidak ditemukan atau tidak punya akses.");
+  if (!data?.length) return fail("Bukti tidak ditemukan atau tidak punya akses.");
+
+  // Bukti valid → pendaftaran yang masih "menunggu" otomatis jadi "terverifikasi".
+  // Hanya menaikkan dari "menunggu"; finalis/ditolak tidak disentuh, dan menolak bukti tidak menurunkan status.
+  if (parsed.data.status === "terverifikasi") {
+    const { error: regError } = await supabase
+      .from("registrations")
+      .update({ status: "terverifikasi" })
+      .eq("id", data[0].registration_id)
+      .eq("status", "menunggu");
+    if (regError) {
+      revalidatePath("/admin", "layout");
+      return fail("Bukti tersimpan sebagai valid, tetapi status pendaftaran gagal diubah. Ubah status secara manual.");
+    }
+  }
   return done();
 }
 

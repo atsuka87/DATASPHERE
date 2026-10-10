@@ -15,15 +15,22 @@ export default function FilterBar({
   q,
   searchPlaceholder,
   selects,
+  hidden = {},
 }: {
   basePath: string;
   q?: string;
   searchPlaceholder: string;
   selects: FilterSelect[];
+  /** Parameter yang dipertahankan saat mencari (mis. tab aktif) */
+  hidden?: Record<string, string | undefined>;
 }) {
   const active = Boolean(q) || selects.some((s) => s.value);
+  const keep = Object.entries(hidden).filter(([, v]) => v);
   return (
     <form method="get" action={basePath} className="admin-card p-[14px] sm:p-[16px] flex flex-wrap items-end gap-[10px]">
+      {keep.map(([k, v]) => (
+        <input key={k} type="hidden" name={k} value={v} />
+      ))}
       <label className="flex flex-col gap-[6px] flex-[1_1_240px] min-w-0">
         <span className="text-[11px] uppercase tracking-[0.12em] text-silver-mist">Cari</span>
         <span className="relative">
@@ -61,7 +68,7 @@ export default function FilterBar({
           Terapkan
         </button>
         {active && (
-          <Link href={basePath} className="admin-btn py-[9px]">
+          <Link href={`${basePath}${keep.length ? `?${new URLSearchParams(keep as [string, string][])}` : ""}`} className="admin-btn py-[9px]">
             Reset
           </Link>
         )}

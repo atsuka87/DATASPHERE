@@ -3,7 +3,7 @@
 Centang semua sebelum admin panel dipakai di production. Uji otomatis: `node supabase/tests/rls-anon-test.mjs` (harus "Semua uji lulus").
 
 ## 1. Database Supabase
-- [ ] Migrasi 001–009 sudah dijalankan berurutan di SQL Editor (009 **setelah** service role key terpasang di server).
+- [ ] Migrasi 001–010 sudah dijalankan berurutan di SQL Editor (009 **setelah** service role key terpasang di server).
 - [ ] `rls-anon-test.mjs` lulus: anon key tidak bisa SELECT/INSERT/UPDATE/DELETE di `registrations`, `seminar_registrations`, `payment_proofs`, `profiles`.
 - [ ] Table Editor → setiap tabel di schema `public` berlabel **RLS enabled** (tidak ada tabel baru tanpa RLS).
 - [ ] Storage → bucket `bukti-pembayaran` berstatus **Private** (bukan Public).
@@ -39,6 +39,7 @@ Centang semua sebelum admin panel dipakai di production. Uji otomatis: `node sup
 - [ ] Ubah status satu pendaftar → muncul "Diubah … oleh <email>" (audit trail jalan).
 - [ ] Export CSV hanya bisa diunduh saat login (coba buka `/admin/export/lomba` di incognito → dialihkan ke login).
 - [ ] File CSV hasil export disimpan di drive panitia yang aksesnya terbatas (berisi nomor HP siswa — data pribadi).
+- [ ] Kamera hanya diizinkan di `/admin/check-in` (header `Permissions-Policy`); halaman lain tetap `camera=()`.
 - [ ] Link "Buka file" bukti transfer kedaluwarsa (±10 menit) — jangan dibagikan ke luar panitia.
 
 ## 6. Operasional

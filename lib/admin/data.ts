@@ -4,6 +4,7 @@ import { requireStaff } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PROOF_BUCKET } from "@/lib/proof-bucket";
 import { GELOMBANG_VALUES, KATEGORI_IDS, LOMBA_STATUSES, SEMINAR_STATUSES } from "./constants";
+import { LOMBA_TABS, isOverdue, needsCheck } from "./payment";
 
 // Semua query data admin lewat sini — hanya dipanggil dari Server Component / Route Handler.
 // Memakai sesi user (bukan service role), jadi RLS tetap menjadi pagar terakhir.
@@ -42,6 +43,8 @@ export interface LombaRow {
   updated_at: string | null;
   updated_by_email: string | null;
   payment_proofs: ProofRow[];
+  overdue?: boolean; // lewat 3 hari tanpa bukti valid (dihitung di server)
+  hadir_at?: string | null; // waktu check-in (migrasi 010)
 }
 
 export interface SeminarRow {
@@ -77,6 +80,7 @@ export function parseLombaFilters(sp: SearchParams) {
     kategori: opt(z.enum(KATEGORI_IDS), first(sp.kategori)),
     status: opt(z.enum(LOMBA_STATUSES), first(sp.status)),
     gelombang: opt(z.enum(GELOMBANG_VALUES), first(sp.gelombang)),
+    tab: opt(z.enum(LOMBA_TABS), first(sp.tab)),
   };
 }
 export type LombaFilters = ReturnType<typeof parseLombaFilters>;
@@ -93,22 +97,27 @@ export type SeminarFilters = ReturnType<typeof parseSeminarFilters>;
 export async function fetchLomba(f: LombaFilters, { withProofUrls = false } = {}) {
   await requireStaff();
   const supabase = await createSupabaseServerClient();
-  let query = supabase
-    .from("registrations")
-    .select(
-      "id, created_at, nama_tim, nama_sekolah, kategori_lomba, kontak_whatsapp, email, jumlah_anggota, anggota, pendamping_nama, pendamping_kontak, gelombang, status, catatan, updated_at, updated_by_email, payment_proofs(id, file_path, size_bytes, status, created_at, updated_by_email)",
-    )
-    .order("created_at", { ascending: false })
-    .limit(2000);
-  if (f.kategori) query = query.eq("kategori_lomba", f.kategori);
-  if (f.status) query = query.eq("status", f.status);
-  if (f.gelombang) query = query.eq("gelombang", f.gelombang);
-  if (f.q) query = query.or(`nama_tim.ilike.*${f.q}*,nama_sekolah.ilike.*${f.q}*,pendamping_nama.ilike.*${f.q}*`);
+  const cols =
+    "id, created_at, nama_tim, nama_sekolah, kategori_lomba, kontak_whatsapp, email, jumlah_anggota, anggota, pendamping_nama, pendamping_kontak, gelombang, status, catatan, updated_at, updated_by_email, payment_proofs(id, file_path, size_bytes, status, created_at, updated_by_email)";
+  const run = (select: string) => {
+    let query = supabase.from("registrations").select(select).order("created_at", { ascending: false }).limit(2000);
+    if (f.kategori) query = query.eq("kategori_lomba", f.kategori);
+    if (f.status) query = query.eq("status", f.status);
+    if (f.gelombang) query = query.eq("gelombang", f.gelombang);
+    if (f.q) query = query.or(`nama_tim.ilike.*${f.q}*,nama_sekolah.ilike.*${f.q}*,pendamping_nama.ilike.*${f.q}*`);
+    return query;
+  };
 
-  const { data, error } = await query;
+  // hadir_at baru ada setelah migrasi 010 — tanpa itu tetap tampil tanpa info check-in
+  let { data, error } = await run(`${cols}, hadir_at`);
+  if (error?.code === "42703") ({ data, error } = await run(cols));
   if (error) throw new Error(`Gagal memuat pendaftaran lomba: ${error.message}`);
   const rows = (data ?? []) as unknown as LombaRow[];
-  rows.forEach((r) => r.payment_proofs?.sort((a, b) => b.created_at.localeCompare(a.created_at)));
+  const now = Date.now();
+  rows.forEach((r) => {
+    r.payment_proofs?.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    r.overdue = isOverdue(r, now);
+  });
 
   if (withProofUrls) {
     const paths = rows.flatMap((r) => r.payment_proofs.map((p) => p.file_path));
@@ -141,33 +150,38 @@ export type DashboardStats = Awaited<ReturnType<typeof fetchDashboardStats>>;
 export async function fetchDashboardStats() {
   await requireStaff();
   const supabase = await createSupabaseServerClient();
-  const [lomba, seminar, proofs, recent] = await Promise.all([
-    supabase.from("registrations").select("kategori_lomba, status").limit(5000),
-    supabase.from("seminar_registrations").select("id", { count: "exact", head: true }),
-    supabase.from("payment_proofs").select("id", { count: "exact", head: true }).eq("status", "menunggu"),
+  const [lomba, seminar] = await Promise.all([
     supabase
       .from("registrations")
-      .select("id, created_at, nama_tim, nama_sekolah, kategori_lomba, status")
+      .select("id, created_at, nama_tim, nama_sekolah, kategori_lomba, status, payment_proofs(status, created_at)")
       .order("created_at", { ascending: false })
-      .limit(6),
+      .limit(5000),
+    supabase.from("seminar_registrations").select("id", { count: "exact", head: true }),
   ]);
   if (lomba.error) throw new Error(`Gagal memuat statistik: ${lomba.error.message}`);
+  const rows = lomba.data ?? [];
+  const now = Date.now();
 
+  // Kuota terisi = tim yang sudah terverifikasi (termasuk finalis), bukan semua pendaftar
   const perKategori = Object.fromEntries(
-    KATEGORI_IDS.map((k) => [k, { total: 0, terverifikasi: 0, finalis: 0, menunggu: 0, ditolak: 0 }]),
-  ) as Record<string, Record<string, number>>;
-  for (const r of lomba.data ?? []) {
-    const bucket = perKategori[r.kategori_lomba];
-    if (!bucket) continue;
-    bucket.total++;
-    bucket[r.status] = (bucket[r.status] ?? 0) + 1;
+    KATEGORI_IDS.map((k) => [k, { total: 0, terverifikasi: 0, menunggu: 0, ditolak: 0 }]),
+  ) as Record<string, { total: number; terverifikasi: number; menunggu: number; ditolak: number }>;
+  for (const r of rows) {
+    const b = perKategori[r.kategori_lomba];
+    if (!b) continue;
+    b.total++;
+    if (r.status === "terverifikasi" || r.status === "finalis") b.terverifikasi++;
+    else if (r.status === "ditolak") b.ditolak++;
+    else b.menunggu++;
   }
 
   return {
-    totalLomba: lomba.data?.length ?? 0,
+    totalLomba: rows.length,
+    totalTerverifikasi: rows.filter((r) => r.status === "terverifikasi" || r.status === "finalis").length,
     perKategori,
     totalSeminar: seminar.count ?? 0,
-    proofsPending: proofs.count ?? 0,
-    recent: (recent.data ?? []) as Pick<LombaRow, "id" | "created_at" | "nama_tim" | "nama_sekolah" | "kategori_lomba" | "status">[],
+    perluDicek: rows.filter(needsCheck).length,
+    lewatBatas: rows.filter((r) => isOverdue(r, now)).length,
+    recent: rows.slice(0, 6) as Pick<LombaRow, "id" | "created_at" | "nama_tim" | "nama_sekolah" | "kategori_lomba" | "status" | "payment_proofs">[],
   };
 }

@@ -13,12 +13,16 @@ const ICONS = {
   seminar: (
     <path d="M4 4h12v9H4zM8 17h4M10 13v4M7 8h6M7 10h4" strokeLinecap="round" strokeLinejoin="round" />
   ),
+  checkin: (
+    <path d="M3 7V4h3M14 4h3v3M17 13v3h-3M6 16H3v-3M6 7h3v3H6zM11 7h3v3h-3zM6 12h3M12 12h2v2" strokeLinecap="round" strokeLinejoin="round" />
+  ),
 };
 
 export const ADMIN_LINKS = [
   { href: "/admin/dashboard", label: "Dashboard", icon: ICONS.dashboard },
   { href: "/admin/pendaftaran-lomba", label: "Pendaftaran Lomba", short: "Lomba", icon: ICONS.lomba },
   { href: "/admin/pendaftaran-seminar", label: "Pendaftaran Seminar", short: "Seminar", icon: ICONS.seminar },
+  { href: "/admin/check-in", label: "Check-in (Scan QR)", short: "Check-in", icon: ICONS.checkin },
 ];
 
 function Icon({ children }: { children: React.ReactNode }) {
@@ -36,12 +40,14 @@ export default function AdminNav({ variant }: { variant: "sidebar" | "tabs" }) {
 
   if (variant === "tabs") {
     return (
-      <nav className="no-scrollbar flex gap-[6px] overflow-x-auto" aria-label="Menu admin">
+      // 4 menu muat satu baris di HP: ikon di atas, label pendek di bawah
+      <nav className="grid grid-cols-4 gap-[6px]" aria-label="Menu admin">
         {ADMIN_LINKS.map((l) => (
           <Link
             key={l.href}
             href={l.href}
-            className={`flex items-center gap-[6px] whitespace-nowrap rounded-[var(--radius-small)] px-[12px] py-[8px] text-[13px] ${
+            aria-current={isActive(l.href) ? "page" : undefined}
+            className={`flex flex-col sm:flex-row items-center justify-center gap-[4px] sm:gap-[6px] whitespace-nowrap rounded-[var(--radius-small)] px-[4px] sm:px-[12px] py-[7px] sm:py-[8px] text-[12px] sm:text-[13px] ${
               isActive(l.href) ? "bg-accent-primary text-white" : "text-silver-mist border border-accent-primary/30"
             }`}
           >

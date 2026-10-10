@@ -10,6 +10,8 @@ import Turnstile, { TURNSTILE_SITE_KEY } from "@/components/Turnstile";
 import { submitLomba, submitSeminar } from "./actions";
 import { useNow } from "@/lib/use-now";
 import ProofPicker from "@/components/ProofPicker";
+import RegistrationQr from "@/components/RegistrationQr";
+import { shortRef, type RegKind } from "@/lib/registration-qr";
 import { uploadProof, type PreparedProof } from "@/lib/proof-upload";
 import {
   CATEGORIES,
@@ -86,6 +88,7 @@ function SuccessCard({
   title,
   body,
   refId,
+  qr,
   onReset,
   resetLabel,
   children,
@@ -93,6 +96,7 @@ function SuccessCard({
   title: string;
   body: React.ReactNode;
   refId: string;
+  qr: { kind: RegKind; name: string };
   onReset: () => void;
   resetLabel: string;
   children?: React.ReactNode;
@@ -107,13 +111,19 @@ function SuccessCard({
         <h2 className="text-platinum text-[26px] md:text-[32px]">{title}</h2>
         <p className="text-silver-mist text-[15px] max-w-[500px]">{body}</p>
       </div>
-      <div className="bg-liquid-deep px-[24px] py-[16px] rounded-[var(--radius-small)] border border-accent-primary/30 flex flex-col items-center gap-[4px] w-full max-w-[420px]">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-silver-mist">Nomor Registrasi</span>
-        <span className="text-[16px] font-mono text-lavender-phosphor break-all">{refId.slice(0, 8).toUpperCase()}</span>
+      <div className="bg-liquid-deep px-[24px] py-[20px] rounded-[var(--radius-small)] border border-accent-primary/30 flex flex-col items-center gap-[12px] w-full max-w-[420px]">
+        <div className="flex flex-col items-center gap-[4px]">
+          <span className="text-[11px] uppercase tracking-[0.14em] text-silver-mist">Nomor Registrasi</span>
+          <span className="text-[18px] font-mono text-lavender-phosphor break-all">{shortRef(refId)}</span>
+        </div>
+        <RegistrationQr kind={qr.kind} id={refId} name={qr.name} />
+        <span className="text-[12px] text-silver-mist max-w-[300px]">
+          Tunjukkan QR ini ke panitia saat check-in{qr.kind === "lomba" ? " atau konfirmasi pembayaran" : ""}.
+        </span>
       </div>
       {children}
       <p className="text-silver-mist text-[13px] max-w-[460px]">
-        <span className="text-platinum">Tangkap layar (screenshot) halaman ini sekarang</span> — nomor registrasi
+        <span className="text-platinum">Simpan gambar QR atau screenshot halaman ini sekarang</span> — nomor registrasi
         tidak dikirim ulang lewat email. Informasi selanjutnya akan disampaikan panitia melalui kontak yang kamu isi.
       </p>
       <div className="flex flex-col sm:flex-row gap-[16px]">
@@ -178,6 +188,7 @@ function SeminarForm() {
           </>
         }
         refId={success.id}
+        qr={{ kind: "seminar", name: success.nama }}
         onReset={() => {
           setForm(emptySeminar);
           setCaptcha(null);
@@ -547,6 +558,7 @@ function LombaForm({ initialCategory }: { initialCategory: CategoryId }) {
           </>
         }
         refId={success.id}
+        qr={{ kind: "lomba", name: success.nama }}
         onReset={reset}
         resetLabel="Daftarkan Peserta/Tim Lain"
       >

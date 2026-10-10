@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { deleteRegistration, updateNote, updateProofStatus, updateStatus, type ActionResult } from "@/app/admin/(panel)/actions";
 import { STATUS_LABEL, STATUS_TONE } from "@/lib/admin/constants";
+import { PAY_LABEL, type PayState } from "@/lib/admin/payment";
 
 // Kontrol interaktif kecil di tabel admin. Semua perubahan lewat Server Action
 // (yang mengecek role + validasi Zod); komponen ini tidak pernah query database langsung.
@@ -31,6 +32,25 @@ export function StatusBadge({ status }: { status: string }) {
     >
       <span className={`w-[6px] h-[6px] rounded-full ${tone.dot}`} aria-hidden="true" />
       {STATUS_LABEL[status] ?? status}
+    </span>
+  );
+}
+
+const PAY_TONE: Record<PayState, string> = {
+  "perlu-dicek": "text-platinum bg-accent-primary border-accent-secondary/70",
+  "belum-upload": "text-silver-mist border-dashed border-silver-mist/35",
+  valid: STATUS_TONE.terverifikasi.badge,
+  ditolak: STATUS_TONE.ditolak.badge,
+};
+
+export function PayBadge({ state, overdue = false }: { state: PayState; overdue?: boolean }) {
+  return (
+    <span className="inline-flex flex-wrap items-center gap-[6px]">
+      <span className={`inline-flex items-center whitespace-nowrap text-[12px] leading-none px-[9px] py-[5px] rounded-full border ${PAY_TONE[state]}`}>
+        {state === "valid" ? "✓ " : ""}
+        {PAY_LABEL[state]}
+      </span>
+      {overdue && <span className="text-[11px] text-red-300 whitespace-nowrap">lewat batas</span>}
     </span>
   );
 }
@@ -83,31 +103,41 @@ export function StatusSelect({
   );
 }
 
-export function ProofStatusButtons({ id, status }: { id: string; status: string }) {
+const PROOF_STATE: Record<string, PayState> = { menunggu: "perlu-dicek", terverifikasi: "valid", ditolak: "ditolak" };
+
+// actions=false untuk bukti lama: hanya tampilkan statusnya, keputusan diambil dari bukti terbaru
+export function ProofStatusButtons({ id, status, actions = true }: { id: string; status: string; actions?: boolean }) {
   const { pending, error, run } = useAction();
   return (
-    <div className="flex flex-wrap items-center gap-[6px]">
-      <StatusBadge status={status} />
-      <span className="flex-1 min-w-[8px]" />
-      {status !== "terverifikasi" && (
-        <button
-          disabled={pending}
-          onClick={() => run(() => updateProofStatus({ id, status: "terverifikasi" }))}
-          className="admin-btn admin-btn-primary px-[10px] py-[5px] text-[12px]"
-        >
-          ✓ Verifikasi
-        </button>
+    <div className="flex flex-col gap-[10px]">
+      <PayBadge state={PROOF_STATE[status] ?? "perlu-dicek"} />
+      {actions && (
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-[8px]">
+        {status !== "terverifikasi" && (
+          <button
+            disabled={pending}
+            onClick={() => run(() => updateProofStatus({ id, status: "terverifikasi" }))}
+            className="admin-btn admin-btn-primary px-[14px] py-[8px] text-[13px]"
+          >
+            ✓ Bukti valid
+          </button>
+        )}
+        {status !== "ditolak" && (
+          <button
+            disabled={pending}
+            onClick={() => run(() => updateProofStatus({ id, status: "ditolak" }))}
+            className="admin-btn px-[14px] py-[8px] text-[13px] text-red-300 border-red-400/40 hover:border-red-400"
+          >
+            Tolak bukti
+          </button>
+        )}
+      </div>
       )}
-      {status !== "ditolak" && (
-        <button
-          disabled={pending}
-          onClick={() => run(() => updateProofStatus({ id, status: "ditolak" }))}
-          className="admin-btn px-[10px] py-[5px] text-[12px] text-red-300 border-red-400/40 hover:border-red-400"
-        >
-          Tolak
-        </button>
+      {actions && status === "menunggu" && (
+        <span className="text-[11px] text-silver-mist">Bukti valid → status pendaftaran otomatis jadi Terverifikasi.</span>
       )}
-      {error && <span className="w-full text-[12px] text-red-300">{error}</span>}
+      {pending && <span className="text-[12px] text-silver-mist">Menyimpan…</span>}
+      {error && <span className="text-[12px] text-red-300">{error}</span>}
     </div>
   );
 }
